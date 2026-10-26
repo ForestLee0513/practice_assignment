@@ -9,15 +9,22 @@ from course_io import snapshot
 
 def regression_metrics(y,pred):
     """실습02 재사용. MAE_ms, RMSE_ms, R2 dict를 계산한다. 원시 값을 반올림하지 않는다."""
-    # TODO D6-07-H1: 바로 위 함수 설명의 입력·반환 계약을 완성하세요.
-    raise NotImplementedError("TODO D6-07-H1: 구현 후 다시 실행하세요.")
+    # 정답 해설 D6-07-H1
+    return {'MAE_ms':float(mean_absolute_error(y,pred)),
+            'RMSE_ms':float(root_mean_squared_error(y,pred)),
+            'R2':float(r2_score(y,pred))}
 
 def classification_metrics(y,pred):
     """실습03 재사용. labels=[0,1]. Accuracy,Precision,Recall,F1,TN,FP,FN,TP 반환.
     실패=1, zero_division=0. 오탐은 FP, 실제 실패를 놓친 것은 FN이다.
     """
-    # TODO D6-07-H2: 바로 위 함수 설명의 입력·반환 계약을 완성하세요.
-    raise NotImplementedError("TODO D6-07-H2: 구현 후 다시 실행하세요.")
+    # 정답 해설 D6-07-H2
+    tn,fp,fn,tp=confusion_matrix(y,pred,labels=[0,1]).ravel()
+    return {'Accuracy':float(accuracy_score(y,pred)),
+            'Precision':float(precision_score(y,pred,zero_division=0)),
+            'Recall':float(recall_score(y,pred,zero_division=0)),
+            'F1':float(f1_score(y,pred,zero_division=0)),
+            'TN':int(tn),'FP':int(fp),'FN':int(fn),'TP':int(tp)}
 
 def fit_candidates(candidates,X_train,y_train,X_valid,y_valid,task):
     """{이름:estimator}별로 독립 Pipeline을 학습한다.
@@ -25,8 +32,35 @@ def fit_candidates(candidates,X_train,y_train,X_valid,y_valid,task):
     task는 regression/classification. train-only fit, valid predict, 입력·통계 검사를 포함한다.
     make_records()는 제공 코드다. 학생은 핵심 학습 흐름을 구현한다.
     """
-    # TODO D6-07-H3: 바로 위 함수 설명의 입력·반환 계약을 완성하세요.
-    raise NotImplementedError("TODO D6-07-H3: 구현 후 다시 실행하세요.")
+    # 정답 해설 D6-07-H3
+    rows=[]; predictions=[]; models={}; trace=[]
+    score_fn=regression_metrics if task=='regression' else classification_metrics
+    for name,estimator in candidates.items():
+        Xtr,Xva=before_model(estimator,X_train,y_train,X_valid,y_valid)
+        model=build_pipeline(estimator)
+        model.fit(Xtr,y_train)       # valid/test로 fit하지 않습니다.
+        before=snapshot(model['pre'])
+        pred=model.predict(Xva)
+        train_pred=model.predict(Xtr)
+        check_finite(pred,len(Xva))
+        unchanged=before==snapshot(model['pre'])
+        if not unchanged: raise AssertionError('예측 중 전처리 학습 통계가 바뀌었습니다.')
+        metrics=score_fn(y_valid,pred)
+        train_metric=score_fn(y_train,train_pred)
+        key='RMSE_ms' if task=='regression' else 'F1'
+        rows.append({'task':task,'model':name,'scale':'standard',
+            'n_train':len(Xtr),'n_valid':len(Xva),
+            'K':getattr(estimator,'n_neighbors',None),
+            'C':getattr(estimator,'C',None),'weights':getattr(estimator,'weights','not_applicable'),
+            'p':getattr(estimator,'p',None),'primary_metric':key,
+            'train_'+key:train_metric[key],**metrics})
+        predictions.extend(make_records(task,name,Xva.index,y_valid,pred,model,Xva))
+        trace.append({'task':task,'model':name,'fit_ids':Xtr.index.tolist(),
+                      'predict_ids':Xva.index.tolist(),'input_columns':Xtr.columns.tolist(),
+                      'statistics_unchanged':unchanged,'fitted_statistics':before,
+                      'feature_names':model['pre'].get_feature_names_out().tolist()})
+        models[name]=model
+    return pd.DataFrame(rows),pd.DataFrame(predictions),models,trace
 
 def make_records(task,name,ids,y,pred,model,X):
     """행 순서를 유지하는 제공 코드. 회귀 잔차는 실제-예측입니다."""

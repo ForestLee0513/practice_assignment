@@ -83,6 +83,7 @@ def validate_k(k,n_train):
         raise ValueError(f'K는 1~{n_train}의 정수여야 합니다: {k!r}')
     return int(k)
 
+# requests.csv, split_manifest.csv, split_order.csv 파일 읽기
 def load_data(data_dir=None):
     """원본·분할표·분할 내 순서를 재사용합니다. test의 X/y는 반환하지 않습니다.
     split_manifest는 Day5의 원본 그대로, split_order는 같은 ID의 원래 순서를 보존합니다.
@@ -92,6 +93,7 @@ def load_data(data_dir=None):
     raw=read_table(d/'requests.csv').set_index('request_id')
     manifest=read_table(d/'split_manifest.csv')
     order=read_table(d/'split_order.csv')
+    # 예외 처리
     if raw.index.has_duplicates or raw.index.isna().any():
         raise ValueError('원본 request_id 중복 또는 결측')
     if manifest['request_id'].duplicated().any() or order['request_id'].duplicated().any():

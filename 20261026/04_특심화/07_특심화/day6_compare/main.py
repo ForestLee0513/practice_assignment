@@ -16,36 +16,52 @@ ROOT=Path(__file__).resolve().parent
 LEVEL='advanced'
 
 def run_project(data_dir=None,output_dir=None):
+    #파일 읽기
     data_dir=Path(data_dir) if data_dir else ROOT/'data'
     out=Path(output_dir) if output_dir else ROOT/'outputs'
     d=load_data(data_dir)
+    # LEVEL에 따른 분류 처리(실습용 난이도 파일 구분용인듯? 우리가 볼건 advanced만 보면될듯함.)
     if LEVEL=='basic':
         # 실습06 결과 재사용. 제공 파일을 계산 결과인 것처럼 숨기지 않고 출처를 기록합니다.
         own=data_dir/'knn_search_from_ex06.csv'
         ref=own if own.exists() else data_dir/'knn_search_reference.csv'
         search=pd.read_csv(ref)
         source='student_ex06_record' if own.exists() else 'provided_ex06_checkpoint'
+    # 여기서부터 확인 시작
     else:
+        # task,K,scale,weights,p,metric,train_score,valid_score의 10행 표 생성
+        # 위치는 day6_compare/search.py:8 부터 시작
         from search import search_k
         search=search_k(d)
         source='recomputed_train_valid'
+    # 탐색표 조회
     ks=choose_k(search)
+    # 입력특성(X)를 참고하지 않은 상태로 타겟 값(y/정답)만으로 평균 기준선 회귀모델에 대한 정보를 dict에 저장함
+    # 회귀모델 생성 후 KNN 모델로 군집화
     reg_spec={'Dummy':DummyRegressor(strategy='mean'), 'Linear':LinearRegression(),
               f"KNN_k{ks['regression']}":KNeighborsRegressor(n_neighbors=ks['regression'])}
+    # 입력특성(X)를 참고하지 않은 상태로 타겟 값(y/정답)만으로 빈도 기준 분류모델에 대한 정보를 dict에 저장함
+    # 회귀모델 생성 후 KNN 모델로 군집화
     cls_spec={'Dummy':DummyClassifier(strategy='most_frequent'),
               'Logistic':LogisticRegression(C=1.0,max_iter=1000),
               f"KNN_k{ks['classification']}":KNeighborsClassifier(n_neighbors=ks['classification'])}
-    rt,rp,rm,rtrace=fit_candidates(reg_spec,d.X_train,d.yr_train,d.X_valid,d.yr_valid,'regression')
-    ct,cp,cm,ctrace=fit_candidates(cls_spec,d.X_train,d.yc_train,d.X_valid,d.yc_valid,'classification')
+    # 상단에 spec형식으로 저장한 dict를 기반으로 모델 학습 처리
+    rt,rp,rm,rtrace=fit_candidates(reg_spec,d.X_train,d.yr_train,d.X_valid,d.yr_valid,'regression') #회귀 평가 기준
+    ct,cp,cm,ctrace=fit_candidates(cls_spec,d.X_train,d.yc_train,d.X_valid,d.yc_valid,'classification') # 분류 평가 기준
+
+    # 모델 분류 및 정보를 dict 형태로 출력
     selection=select_models(rt,ct)
     # 두 문제에서 쓰지 않는 보조 열도 float로 맞춰 all-NA concat 경고를 방지합니다.
+    # 테이블에 residual_ms, probability_failed를 Float형식으로 지정 후 추가
     for table in [rp,cp]:
         table[['residual_ms','probability_failed']]=table[['residual_ms','probability_failed']].astype(float)
+    # 지금까지 반영된 모델의 정보를 pandas로 합침
     predictions=pd.concat([rp,cp],ignore_index=True)
     # test를 모델에 전달한 흔적은 없어야 합니다. ID/개수만 정책 기록에 포함합니다.
     if set(predictions.request_id)&set(d.test_ids): raise AssertionError('test ID가 예측에 섞였습니다.')
     chosen={'regression':rm[selection['regression']['model']],
             'classification':cm[selection['classification']['model']]}
+    # 생성된 보고서를 기반으로 파일 생성 및 저장 (csv, json)
     new=read_table(data_dir/'new_requests.csv').set_index('request_id')
     contracts={task:prediction_contract(m,new) for task,m in chosen.items()}
     out.mkdir(parents=True,exist_ok=True)
@@ -89,6 +105,8 @@ def main():
     parser.add_argument('--data-dir',type=Path,default=ROOT/'data')
     parser.add_argument('--output-dir',type=Path,default=ROOT/'outputs')
     args=parser.parse_args()
+    # run_project 실행 시 실행되는 스레드의 단위를 1개로 제한함
+    # 강제종료를 하더라도 프로세스가 남는 '좀비 프로세스'를 방지하기 위함
     from threadpoolctl import threadpool_limits
     with threadpool_limits(limits=1): run_project(args.data_dir,args.output_dir)
 

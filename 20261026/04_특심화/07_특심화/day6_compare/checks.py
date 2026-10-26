@@ -21,5 +21,14 @@ def prediction_contract(model,X):
     반환: n_rows,n_features,statistics_unchanged 딕셔너리. 통계가 바뀌면 AssertionError.
     missing/extra 열은 임의로 채우거나 조용히 삭제하지 않고 ValueError로 알린다.
     """
-    # TODO D6-07-H6: 바로 위 함수 설명의 입력·반환 계약을 완성하세요.
-    raise NotImplementedError("TODO D6-07-H6: 구현 후 다시 실행하세요.")
+    # 정답 해설 D6-07-H6
+    X=check_features(X)
+    before=snapshot(model['pre'])
+    z=model['pre'].transform(X)
+    pred=model.predict(X)
+    check_finite(pred,len(X))
+    if z.shape!=(len(X),8) or not np.isfinite(z).all():
+        raise AssertionError('전처리 결과는 유한한 8개 특성이어야 합니다.')
+    unchanged=before==snapshot(model['pre'])
+    if not unchanged: raise AssertionError('새 입력으로 학습 통계가 바뀜')
+    return {'n_rows':len(X),'n_features':z.shape[1],'statistics_unchanged':unchanged}
