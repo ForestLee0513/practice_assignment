@@ -24,10 +24,18 @@ rows = []
 linear_prediction = None
 for name, estimator in [("Dummy", DummyRegressor()), ("Linear", LinearRegression())]:
     model = build_model(estimator)
-    # TODO H02: 회귀 모델을 학습하고 valid 예측을 구하세요.
-    # 힌트: build_model은 전처리와 모델이 묶인 Pipeline을 반환합니다.
-    pass
-    prediction = None
+    # H02: train으로 학습한 뒤, 학습에 사용하지 않은 valid의 처리 시간을 예측한다.
+    # X_train은 요청의 입력 특성 4개이고, elapsed_ms는 맞혀야 할 실제 처리 시간(ms)이다.
+    # Pipeline의 fit은 train으로 결측값 대체·스케일링·인코딩에 필요한 통계를 구하고,
+    # 변환된 입력과 정답을 사용해 마지막 회귀 모델을 학습한다.
+    # Dummy는 train 정답의 평균을, Linear는 입력과 정답의 선형 관계를 학습한다.
+    model.fit(X_train, train["elapsed_ms"])
+
+    # predict에는 정답 없이 X_valid만 전달한다. 먼저 fit을 마쳐야 예측할 수 있다.
+    # train에서 학습한 전처리를 그대로 적용하며, valid로 통계나 모델을 다시 학습하지 않는다.
+    # 반환값은 X_valid의 행 순서에 대응하는 처리 시간 예측값 배열이다.
+    # valid의 실제 정답은 아래 평가 지표 계산에만 사용한다.
+    prediction = model.predict(X_valid)
     rows.append({"model": name, "MAE_ms": mean_absolute_error(valid["elapsed_ms"], prediction),
                  "RMSE_ms": root_mean_squared_error(valid["elapsed_ms"], prediction),
                  "R2": r2_score(valid["elapsed_ms"], prediction)})
