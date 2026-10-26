@@ -24,7 +24,7 @@ rows = []
 for scale in ["none", "standard", "minmax"]:
     # TODO H05: 전처리에 반복 변수 scale을 전달하세요.
     # 힌트: build_model의 두 번째 인자는 스케일링 이름입니다.
-    model = build_model(KNeighborsClassifier(n_neighbors=5), scale="standard")
+    model = build_model(KNeighborsClassifier(n_neighbors=5), scale=scale)
     model.fit(X_train, train["failed"])
     imputer = model["pre"].named_transformers_["num"]["imputer"]
     before = imputer.statistics_.copy()
