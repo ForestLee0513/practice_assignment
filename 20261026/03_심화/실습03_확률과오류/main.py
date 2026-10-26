@@ -32,9 +32,9 @@ rows = []
 for threshold in [0.5, 0.3]:
     # TODO H03: 고정값 0.5 대신 반복 변수 threshold를 사용하세요.
     # 힌트: 비교 결과 True/False를 astype(int)로 1/0으로 바꿉니다.
-    prediction = (probability >= 0.5).astype(int)
+    prediction = (probability >= threshold).astype(int)
     tn, fp, fn, tp = confusion_matrix(truth, prediction, labels=[0, 1]).ravel()
-    rows.append({"threshold": threshold, "FP": fp, "FN": fn, "TP": tp,
+    rows.append({"threshold": threshold, "FP": fp, "FN ㅍㅊ ": fn, "TP": tp,
                  "F1": f1_score(truth, prediction, zero_division=0)})
 comparison = pd.DataFrame(rows)
 out = HERE / "outputs"
