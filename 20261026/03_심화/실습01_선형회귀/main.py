@@ -6,7 +6,7 @@ y = [700, 800, 900, 1000]
 model = LinearRegression()
 # TODO H01: 두 특성을 가진 X와 y로 model을 학습하세요.
 # 힌트: 기본필수와 호출 방법은 같습니다.
-pass
+model.fit(X=X, y=y)
 new = [[400, 2]]
 prediction = model.predict(new)[0]
 # 같은 수식을 직접 계산합니다. 모델을 별도로 학습하거나 고치지 않습니다.
