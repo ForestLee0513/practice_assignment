@@ -35,8 +35,8 @@ for task in ["classification", "regression"]:
         else:
             # TODO H06: 회귀의 train·valid RMSE를 각각 구하세요.
             # 힌트: 첫 번째 인자는 실제값, 두 번째 인자는 대응하는 예측입니다.
-            train_score = root_mean_squared_error(train["elapsed_ms"], p_train) # trian이라는 실제 x값과 두번째 인자로 p_train이라는 예측치를 기반으로 RMSE 측정
-            valid_score = root_mean_squared_error(valid["elapsed_ms"], p_valid) # valid라는 실제 x값고 두번째인자로 p_valid라는 예측치를 기반으로 RMSE 측정
+            train_score = root_mean_squared_error(train["elapsed_ms"], p_train)  # 학습 정답과 학습 예측값으로 RMSE 계산
+            valid_score = root_mean_squared_error(valid["elapsed_ms"], p_valid)  # 검증 정답과 검증 예측값으로 RMSE 계산
             metric = "RMSE_ms"
         rows.append({"task": task, "K": k, "scale": "standard", "weights": "uniform", "metric": metric,
                      "train_score": train_score, "valid_score": valid_score})
