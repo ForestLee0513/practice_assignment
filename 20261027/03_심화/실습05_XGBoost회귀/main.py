@@ -33,7 +33,7 @@ min_child_weight: 최소 자식 가중치 (1)
 reg_lambda: 잎(leaf) 가중치에 대한 L2 규제 (1)
 objective: 오차 발생 시 산정할 목표 (reg:squarederror) - 오차제곱으로 산정
 eval_metric: 모델에 대한 별도 테스트 시 사용할 통계 (rmse) - rmse 통계로 진행
-device: 작업 시 사용할 자원 (cpu) - CPU / GPU 별도 구분
+device: 작업 시 사용할 자원 (cpu) - CPU / CUDA 별도 구분(CUDA 0은 단일 GPU / CUDA 1은 다중 GPU / 엔비디아 GPU만 지원 / device:cuda:1 형식으로 대응)
 random_state: 랜덤 시드 고정값 (42)
 n_jobs: 작업 시 사용할 코어 개수 (1)
 """
