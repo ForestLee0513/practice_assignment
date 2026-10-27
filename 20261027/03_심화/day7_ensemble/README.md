@@ -117,6 +117,27 @@ regression ID 순서 일치: True / 예측 일치: True
 - 새 모델을 fit한 것과 복원한 것은 어떤 차이가 있나요?
 - 복원 결과가 일치하면 새로운 데이터에서도 성능이 보장될까요?
 
+## 별도 탐색 실험 로그
+
+`python explore.py`를 실행하면 RandomForest의 `min_samples_leaf`만 2·4로 바꾸는
+별도 실험을 수행합니다. 분류·회귀 각각 같은 train 5-fold를 공유하며,
+분류는 CV 평균 F1 최대, 회귀는 CV 평균 RMSE 최소로 선택합니다.
+동점이면 먼저 기록한 후보 2를 선택하며 valid는 선택 후 진단에만 사용합니다.
+기존 `main.py`의 모델 선택·출력 파일은 변경하지 않습니다.
+
+콘솔에 실행 조건·모델 설정·fold별 점수·CV 평균과 표준편차·valid 지표를 출력하고,
+`outputs/exploration/`에 다음 보고서용 기록을 저장합니다.
+
+- `experiment.log`: 콘솔에 출력한 실험 기록 전체
+- `summary.csv`: 모든 후보의 CV 평균·표준편차와 valid 진단 지표
+- `fold_scores.csv`: 후보별 5개 fold의 점수와 학습·평가 행 수
+- `fold_manifest.csv`: 각 fold의 학습·평가 요청 ID
+- `config.json`: 후보·선택 규칙·실행 환경·CV로 선택한 설정
+
+이 탐색 결과는 고정 후보를 비교하는 본 실험과 구분해서 보고합니다.
+동일한 train·valid를 반복 사용하므로 독립적인 최종 성능으로 해석하지 않습니다.
+test는 이 실험에서도 사용하지 않습니다.
+
 ## 결과 파일 읽기
 
 | 파일 | 내용·확인점 |
