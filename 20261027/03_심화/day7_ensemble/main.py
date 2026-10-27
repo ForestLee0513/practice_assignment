@@ -62,8 +62,8 @@ for name, estimator, scale in classifiers:
     # 제공: CV에 전처리 전 X와 Pipeline을 전달합니다. fold 내부에서 전처리를 학습합니다.
     scores = cross_val_score(model, X_train, y_train, cv=class_folds, scoring="f1", n_jobs=1)
     # TODO C07a: 분류 후보를 train 전체로 학습하고 valid를 예측하세요.
-    pass
-    prediction = None
+    model.fit(X_train, y_train)
+    prediction = model.predict(X_valid)
     # TODO 끝
     probability = model.predict_proba(X_valid)[:, list(model.classes_).index(1)]
     class_rows.append({"model": name, "CV_F1": scores.mean(), "CV_std": scores.std(),
@@ -82,8 +82,10 @@ for name, estimator, scale in regressors:
     scores = -cross_val_score(model, X_train, train["elapsed_ms"], cv=reg_folds,
                               scoring="neg_root_mean_squared_error", n_jobs=1)
     # TODO C07b: 회귀 후보를 실행시간 정답으로 학습하고 valid를 예측하세요.
-    pass
-    prediction = None
+    # 동일한 x_train 기준으로 학습을 하나, 정답 내용 경우 y_train을 사용하는 것이 아닌 별도로 train에서 elapsed_ms를 따로 골라 정답으로 지정
+    model.fit(X_train, train["elapsed_ms"])
+    # 학습된 모델을 기반으로 x_valid 검증
+    prediction = model.predict(X_valid)
     # TODO 끝
     reg_rows.append({"model": name, "CV_RMSE_ms": scores.mean(), "CV_std_ms": scores.std(),
                      "scale": "standard" if scale else "none", **regression_metrics(valid["elapsed_ms"], prediction)})
