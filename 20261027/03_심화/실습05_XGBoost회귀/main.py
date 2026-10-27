@@ -22,14 +22,29 @@ from sklearn.metrics import mean_absolute_error, root_mean_squared_error
 from preprocessing import build_model
 
 # 제공: 목적함수는 회귀용 squared error, 진단 지표는 rmse입니다.
+"""파라미터 순서대로 주석 설명
+XGBoost 모델 생성
+(파라미터 순서대로)
+n_estimates: 보정회차 (80)
+max_depth: 트리의 최대 깊이 (2)
+learning_rate: 1회마다 보정 반영 정도 (0.05)
+subsample: 트리별 특성의 사용 비율 (0.8)
+min_child_weight: 최소 자식 가중치 (1)
+reg_lambda: 잎(leaf) 가중치에 대한 L2 규제 (1)
+objective: 오차 발생 시 산정할 목표 (reg:squarederror) - 오차제곱으로 산정
+eval_metric: 모델에 대한 별도 테스트 시 사용할 통계 (rmse) - rmse 통계로 진행
+device: 작업 시 사용할 자원 (cpu) - CPU / GPU 별도 구분
+random_state: 랜덤 시드 고정값 (42)
+n_jobs: 작업 시 사용할 코어 개수 (1)
+"""
 estimator = XGBRegressor(n_estimators=80, max_depth=2, learning_rate=0.05,
                   subsample=0.8, colsample_bytree=1.0, reg_lambda=1.0,
                   objective="reg:squarederror", eval_metric="rmse",
                   tree_method="hist", device="cpu", random_state=42, n_jobs=1)
 model = build_model(estimator)
 # TODO C05: 회귀 정답 elapsed_ms로 학습하고 valid를 예측하세요.
-pass
-prediction = None
+model.fit(X=X_train, y=y_train)
+prediction = model.predict(X_valid)
 # TODO 끝
 result = pd.DataFrame([{"model": "XGB", "MAE_ms": mean_absolute_error(valid["elapsed_ms"], prediction),
                        "RMSE_ms": root_mean_squared_error(valid["elapsed_ms"], prediction)}])
