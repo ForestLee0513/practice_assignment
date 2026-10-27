@@ -43,7 +43,7 @@ for name, estimator in candidates:
     # scoring = "neg_root_mean_squared_error" = 음수 제곱 평균값으로 점수 책정
     # scoring이 음수로 진행되는 이유:
     # scikit 내부에서 동작되는 구조적인 문제로 인해 음수로 변환
-    # scikit의 기조는 "점수는 높을수록 좋다" 라는 판단 근거로 모델을 학습하기에, RMSE 에러 검증을 위해서는 낮은 값을 비교 해야 하므로 음수로 진행
+    # scikit의 기조는 "점수는 높을수록 좋다" 라는 판단 근거로 모델을 학습/검증하기에, RMSE 에러 검증을 위해서는 낮은 값을 비교 해야 하므로 음수로 진행
     negative = cross_val_score(estimator=model, X=X_train, y=y_train, cv=folds, scoring="neg_root_mean_squared_error")
     # TODO 끝
     # TODO C06b: 음수 scorer 값을 양수 RMSE로 되돌리세요.
