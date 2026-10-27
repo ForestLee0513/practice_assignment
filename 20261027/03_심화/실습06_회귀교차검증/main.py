@@ -12,7 +12,8 @@ train = raw.loc[train_ids]
 valid = raw.loc[valid_ids]
 FEATURES = ["input_chars", "allowed_tools", "task_type", "priority"]
 X_train, X_valid = train[FEATURES], valid[FEATURES]
-y_train, y_valid = train["failed"], valid["failed"]
+# 회귀 정답은 실패 여부가 아니라 실제 처리 시간(ms)이다.
+y_train, y_valid = train["elapsed_ms"], valid["elapsed_ms"]
 OUT = HERE / "outputs"
 OUT.mkdir(exist_ok=True)
 # test 20건의 입력·정답은 아래 모델에 전달하지 않습니다.
@@ -34,10 +35,19 @@ rows, detail = [], []
 for name, estimator in candidates:
     model = build_model(estimator)
     # TODO C06a: 회귀 정답으로 neg_root_mean_squared_error 점수를 구하세요.
-    negative = None
+    # 전처리를 포함한 Pipeline으로 범주형 입력과 결측값을 fold마다 처리한다.
+    # (파라미터 순서대로)
+    # estimator = model : 교차검증에 사용될 모델 - fit은 별도로 하지 않아도 됨. cross_val_score 실행 과정에서 fit을 모두 진행함
+    # X = 실제로 학습할 모델의 값
+    # y = 실제로 학습할 모델의 정답값 (예측값 산정에 필요)
+    # scoring = "neg_root_mean_squared_error" = 음수 제곱 평균값으로 점수 책정
+    # scoring이 음수로 진행되는 이유:
+    # scikit 내부에서 동작되는 구조적인 문제로 인해 음수로 변환
+    # scikit의 기조는 "점수는 높을수록 좋다" 라는 판단 근거로 모델을 학습하기에, RMSE 에러 검증을 위해서는 낮은 값을 비교 해야 하므로 음수로 진행
+    negative = cross_val_score(estimator=model, X=X_train, y=y_train, cv=folds, scoring="neg_root_mean_squared_error")
     # TODO 끝
     # TODO C06b: 음수 scorer 값을 양수 RMSE로 되돌리세요.
-    rmse = negative
+    rmse = -negative
     # TODO 끝
     rows.append({"model": name, "CV_RMSE_ms": rmse.mean(), "CV_std_ms": rmse.std()})
     for number, value in enumerate(rmse, start=1):
