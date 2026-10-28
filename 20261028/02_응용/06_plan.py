@@ -7,7 +7,12 @@ OUT = HERE / "outputs"
 # 먼저 04_features.py를 완료하세요. valid_F1을 이용해 후보를 재선택하지 않습니다.
 table = pd.read_csv(OUT / "feature_comparison.csv")
 # TODO A06: CV_F1이 가장 큰 행의 model 이름을 선택하세요. 정확한 동점은 표의 첫 후보를 사용합니다.
-selected = "Logistic"
+# pandas를 통해서 table 중 cv_f1의 가장 높은 값을 가진 row를 반환, 선택 후 모델명을 기반으로 선택
+best_model_index = table["CV_F1"].idxmax()
+best_model_row = table.loc[best_model_index]
+best_model_name = best_model_row['model']
+
+selected = best_model_row['model']
 # TODO 끝
 manifest = pd.read_csv(HERE / "data/split_manifest.csv")
 ids = {name: manifest.loc[manifest["split"] == name].sort_values("position")["request_id"].tolist()
