@@ -24,8 +24,12 @@ cluster = Pipeline([("imputer", SimpleImputer(strategy="median")),
                     ("scaler", StandardScaler()),
                     ("kmeans", KMeans(n_clusters=3, n_init=10, random_state=42))])
 # TODO A05: 수치2열만으로 cluster를 학습하세요. failed나 elapsed_ms를 넣지 않습니다.
-pass
+# NUM 기준으로 FEATURES의 마지막 두개의 요소를 제외한 값을 list로 저장
+# 이후 cluster_fit할 때 X_train의 input_chars, allowed_tools만 불러와서 학습
+cluster.fit(X_train[NUM])
 # TODO 끝
+# k-means, scaler 처리 후 출력 / 군집화 결과 출력
+# 군집화 결과는 정답이 없으므로 우열을 가리기 힘듦.
 labels = cluster["kmeans"].labels_
 z = cluster[:-1].transform(X_train[NUM])
 centers = cluster["scaler"].inverse_transform(cluster["kmeans"].cluster_centers_)
