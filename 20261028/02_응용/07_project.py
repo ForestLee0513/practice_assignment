@@ -32,11 +32,12 @@ pre = ColumnTransformer([
 model = Pipeline([("pre", pre), ("model", LogisticRegression(C=plan["C"], max_iter=plan["max_iter"]))])
 # TODO A07a: 새 Pipeline을 X_develop·failed로 학습하세요. 기존 train 통계를 재사용하지 않고 개발80에서 새로 fit합니다.
 pass
+model.fit(X_develop, develop["failed"])
 # TODO 끝
 positive_column = model.classes_.tolist().index(1)
 # TODO A07b: 확정 모델로 test의 실패 확률을 구하세요. test는 fit하지 않습니다.
-probability = np.zeros(len(test))
-# TODO 끝
+probability = model.predict_proba(X_test)[:, positive_column]
+# # TODO 끝
 prediction = (probability > plan["threshold"]).astype(int)
 tn, fp, fn, tp = confusion_matrix(test["failed"], prediction, labels=[0, 1]).ravel()
 metrics = {"n": len(test), "Accuracy": accuracy_score(test["failed"], prediction),
