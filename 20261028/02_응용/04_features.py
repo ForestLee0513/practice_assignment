@@ -31,7 +31,16 @@ from sklearn.model_selection import StratifiedKFold, cross_val_score
 from sklearn.metrics import f1_score
 from sklearn.base import clone
 # TODO A04: train·valid에 log_input_chars와 chars_per_slot을 추가하세요. 자기 행만 사용하고 NaN은 다음 Pipeline에서 처리합니다.
-pass
+# x_valid와 x_train모두 동일한 기능을 하는데 따로 코드를 작성하기에는 중복되는 내용이 많아 PPT의 예제처럼 add_features라는 함수로 반영
+# add_features에서 기존 데이터를 복사 후 반환 / 이후 새로 반환된 값을 기존 train, valid에 반영
+def add_features(X):
+    out = X.copy()
+    out["log_input_chars"] = np.log1p(out[FEATURES[0]])
+    out["chars_per_slot"] = (out["log_input_chars"] / (1.0 + out[FEATURES[1]]))
+    return out
+
+X_train = add_features(X_train)
+X_valid = add_features(X_valid)
 # TODO 끝
 folds = list(StratifiedKFold(n_splits=5, shuffle=True, random_state=42).split(X_train, y_train))
 choices = {"Logistic": NUM, "Logistic_FE": NUM + ["log_input_chars", "chars_per_slot"]}
