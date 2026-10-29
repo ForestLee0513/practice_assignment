@@ -13,7 +13,11 @@ model = SimpleANN()
 # 먼저 같은 모델 구조를 만들었습니다. 인터넷에서 받은 출처 불명 파일은 읽지 마세요.
 # >>> H10
 # TODO H10: 위 요구사항을 읽고 이 블록을 완성하세요.
-pass
+out = base / "outputs"
+model_state_path = out / "model_state.pt"
+# 저장한 파라미터 사전을 CPU로 읽어 동일한 구조의 모델에 적용합니다.
+loaded_model_state = torch.load(model_state_path, map_location="cpu", weights_only=True)
+model.load_state_dict(loaded_model_state)
 # <<< H10
 model.eval()
 with torch.no_grad():
