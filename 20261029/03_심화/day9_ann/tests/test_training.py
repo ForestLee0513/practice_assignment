@@ -36,13 +36,21 @@ class TrainingChecks(unittest.TestCase):
         self.model(self.X).sum().backward()
         before = copy.deepcopy(self.model.state_dict())
         grads = [p.grad.clone() for p in self.model.parameters()]
-        loss, accuracy, prediction = evaluate(self.model, self.X, self.y, nn.CrossEntropyLoss(), torch.device("cpu"))
+        # 원래 loss, accuracy도 같이 받아오지만 파라미터와 gradient가 변경되는지 확인할 때 사용하지 않는 값이므로 _로 받아 의도적으로 사용하지 않음을 명시
+        _, _, prediction = evaluate(self.model, self.X, self.y, nn.CrossEntropyLoss(), torch.device("cpu"))
         # H12 요구: 평가 전후 각 Parameter 값과 기존 grad가 모두 같은지 assertTrue로 검사하세요.
         # 추가: prediction에 requires_grad가 없음을 assertFalse로 확인합니다.
         # 모델의 eval 모드 전환은 정상입니다. 이 단계는 모드 복구까지 요구하지 않습니다.
         # >>> H12
         # TODO H12: 가중치·gradient·예측의 그래프 여부를 검사하세요.
-        self.fail("TODO H12 미완성")
+        # 평가 전후의 파라미터 값이 같은지 확인
+        for name, parameter in self.model.named_parameters():
+            self.assertTrue(torch.equal(before[name], parameter))
+        # 평가 전후의 gradient가 같은지 확인
+        for parameter, previous_grad in zip(self.model.parameters(), grads):
+            self.assertTrue(torch.equal(previous_grad, parameter.grad))
+        # 예측 Tensor가 gradient 추적을 요구하지 않는지 확인
+        self.assertFalse(prediction.requires_grad)
         # <<< H12
 
 if __name__ == "__main__":
