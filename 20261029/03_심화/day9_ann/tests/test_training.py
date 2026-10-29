@@ -29,7 +29,7 @@ class TrainingChecks(unittest.TestCase):
         # 수치를 출력만 하지 말고 self.assertAlmostEqual을 사용합니다.
         # >>> H11
         # TODO H11: actual과 expected가 같은지 검사하세요.
-        self.fail("TODO H11 미완성")
+        self.assertAlmostEqual(actual, expected, places=5)
         # <<< H11
 
     def test_evaluation_does_not_learn(self):
