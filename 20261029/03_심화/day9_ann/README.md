@@ -2,6 +2,12 @@
 
 PPT의 `day9_ann` 구조를 사용합니다. 정상200건 중 train120·valid40만 모델에 전달합니다. 2→8→2 ANN, CrossEntropyLoss, SGD(lr=0.1), batch32, 80epoch를 고정합니다.
 
+## Jupyter로 실행
+
+[day9_ann.ipynb](day9_ann.ipynb)를 열고 프로젝트 `.venv`의 Python 커널을 선택한 뒤 위에서부터 모두 실행합니다. PyTorch와 matplotlib이 필요합니다. 데이터 준비, 모델 정의, 학습·평가, loss 그래프, state_dict 저장, CPU 복원, H11·H12 자동검사를 순서대로 확인할 수 있습니다.
+
+노트북에는 실제 순차 실행으로 확인한 출력과 그래프를 포함했습니다. 기존 결과와 구분하기 위해 생성물은 `outputs/notebook/`에 저장합니다. `train_loss_online` 외에 매 epoch 종료 후의 고정 모델 `train_loss_eval`도 함께 기록합니다. 처음부터 재현하려면 학습 준비 셀부터 다시 실행하거나 커널을 재시작하고 모두 실행합니다.
+
 ```text
 day9_ann/
   main.py              # 전체 실행
