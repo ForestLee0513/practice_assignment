@@ -30,31 +30,60 @@ Xv, yv = X_valid.to(device), y_valid.to(device)
 Xt, yt = X_train.to(device), y_train.to(device)
 history = []
 
-for epoch in range(81):
-    if epoch > 0:
-        model.train()
-        for xb, yb in loader:
-            xb, yb = xb.to(device), yb.to(device)
-            optimizer.zero_grad()
-            loss = loss_fn(model(xb), yb)
-            # 현재 batch loss의 역전파와 SGD 갱신을 작성하세요.
-            # 검증은 아래 eval/no_grad 블록에서만 수행합니다.
-            # >>> H06
-            # TODO H06: 위 요구사항을 읽고 이 블록을 완성하세요.
-            pass
-            # <<< H06
-    # epoch=0은 학습 전입니다. 로그는 갱신이 끝난 동일 모델로 측정합니다.
-    if epoch % 10 == 0:
-        model.eval()
-        with torch.no_grad():
-            train_loss = loss_fn(model(Xt), yt).item()
-            logits = model(Xv)
-            valid_loss = loss_fn(logits, yv).item()
-            accuracy = (logits.argmax(dim=1) == yv).float().mean().item()
-        history.append([epoch, train_loss, valid_loss, accuracy])
-        print(epoch, round(train_loss, 6), round(valid_loss, 6), round(accuracy, 4))
+def train_each_model(model):
+    model.train()
+    online_loss_sum = 0.0
+    sample_count = 0
+    for xb, yb in loader:
+        xb, yb = xb.to(device), yb.to(device)
+        optimizer.zero_grad()
+        logits = model(xb)
+        loss = loss_fn(logits, yb)
+        # 갱신 전 배치 평균 loss를 표본 수로 가중해 누적한다.
+        # 배치마다 모델이 갱신되므로 하나의 고정 모델을 평가한 값과 다르다.
+        online_loss_sum += loss.detach().item() * yb.size(0)
+        sample_count += yb.size(0)
+        loss.backward()
+        optimizer.step()
+    return online_loss_sum / sample_count
+
+def evaluate_model(model, epoch, online_loss=None):
+    model.eval()
+    with torch.no_grad():
+        # 해당 epoch의 갱신을 모두 마친 동일한 모델로 전체 데이터를 평가한다.
+        train_loss = loss_fn(model(Xt), yt).item()
+        logits = model(Xv)
+        valid_loss = loss_fn(logits, yv).item()
+        accuracy = (logits.argmax(dim=1) == yv).float().mean().item()
+    history.append([epoch, online_loss, train_loss, valid_loss, accuracy])
+    return {
+        "train_loss_online": online_loss,
+        "train_loss": train_loss,
+        "valid_loss": valid_loss,
+        "accuracy": accuracy,
+    }
+
+def train_model(model, max):
+    for epoch in range(max + 1):
+        # epoch 0에는 학습 배치가 없으므로 online loss를 기록하지 않는다.
+        online_loss = None
+        if epoch > 0:
+            online_loss = train_each_model(model)
+        if epoch % 10 == 0:
+            evaluate_reesult = evaluate_model(model, epoch, online_loss)
+            online_text = "N/A" if online_loss is None else f"{online_loss:.6f}"
+            print(
+                f"epoch={epoch} | train_loss_online={online_text}"
+                f" | train_loss_eval={evaluate_reesult['train_loss']:.6f}"
+                f" | valid_loss={evaluate_reesult['valid_loss']:.6f}"
+                f" | valid_accuracy={evaluate_reesult['accuracy']:.4f}"
+            )
+
+    return evaluate_reesult
+
+evaluate_reesult = train_model(model=model, max=80)
 
 with (out / "training_history.csv").open("w", encoding="utf-8-sig", newline="") as f:
     writer = csv.writer(f)
-    writer.writerow(["epoch", "train_loss_eval", "valid_loss", "valid_accuracy"])
+    writer.writerow(["epoch", "train_loss_online", "train_loss_eval", "valid_loss", "valid_accuracy"])
     writer.writerows(history)
