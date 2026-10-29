@@ -37,6 +37,45 @@ TODO의 계산을 코드로 확인하고 예상 결과와 비교합니다. 자�
 
 ## 내 기록
 
-- 확인한 입력 / 출력: 
-- 결과의 의미: 
-- 잘못 이해했던 내용 또는 질문:
+### 확인 과정
+
+해당 과제의 조건은 nvidia GPU가 있고 드라이버가 설치 되어 있다고 해서 바로 pyTorch에 cuda로 지정하는 것이 아닌, 실제로 CUDA가 사용 가능한지 검증하는 과정을 확인하기 위함임.
+확인한 결과는 아래와 같다.
+
+#### CUDA 확인 여부 검증
+
+```python
+
+if torch.cuda.is_available():
+    device = torch.device("cuda")
+else:
+    device = torch.device("cpu")
+
+```
+
+`torch.cuda.is_available()`를 통해 CUDA가 실제로 사용 가능한지 확인하고 GPU에 문제가 발생하거나 CUDA가 인식이 안되는 경우 예외처리를 통해 CPU로 fallback하도록 구성했다.
+
+#### 검증 결과
+
+```json
+{
+  "torch": "2.14.0+cu130",
+  "cuda_build": "13.0",
+  "cuda_available": true,
+  "selected_device": "cuda",
+  "calculation": [
+    [5.0, 11.0],
+    [11.0, 25.0]
+  ],
+  "gpu_name": "NVIDIA GeForce RTX 5080 Laptop GPU",
+  "vram_gib": 15.92047119140625
+}
+```
+
+pyTorch 버전: 2.14.0+cu130
+CUDA 빌드 버전: 13.0
+CUDA 활성 여부: true
+선택 장치: cuda - 여기서 GPU 여부를 검증
+calculation 결과: [[5.0, 11.0], [11.0, 25.0]] - 입력값에 대한 연산 결과
+gpu_name: NVIDIA GeForce RTX 5080 Laptop GPU - 사용 가능한 GPU 이름
+vram_gib: 15.92047119140625 - 사용 가능한 GPU VRAM
