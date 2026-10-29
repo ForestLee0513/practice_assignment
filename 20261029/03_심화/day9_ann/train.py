@@ -30,6 +30,7 @@ def evaluate(model, X, y, loss_fn, device):
         # 평가에서는 backward와 optimizer.step을 호출하지 않습니다.
         # >>> H08
         # TODO H08: 위 요구사항을 읽고 이 블록을 완성하세요.
-        prediction = torch.zeros(len(y), dtype=torch.long)
+        # 각 행에서 logit이 가장 큰 클래스 인덱스를 선택하고 CPU로 옮깁니다.
+        prediction = torch.argmax(logits, dim=1).cpu()
         # <<< H08
     return loss, (prediction == y.cpu()).float().mean().item(), prediction
