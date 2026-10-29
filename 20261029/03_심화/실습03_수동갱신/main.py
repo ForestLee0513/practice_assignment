@@ -14,7 +14,8 @@ for step in range(1, 11):
         # lr=0.1로 w를 갱신하세요. 아래 grad.zero_()는 다음 반복에 이전 기울기가 섞이지 않게 합니다.
         # >>> H03
         # TODO H03: 위 요구사항을 읽고 이 블록을 완성하세요.
-        pass
+        lr = 0.1 # learning rate - 해당 값을 변경해서 0.01, 0.1, 0.8의 학습률에 대한 보고서 작성. 코드 요구사항에선 0.1로 바꾸라 했으니 유지
+        w -= lr * w.grad # weight = weight - learning_rate * weight.gard
         # <<< H03
     w.grad.zero_()
     records.append([step, before, gradient, w.item(), (w.detach()-4).square().item()])
