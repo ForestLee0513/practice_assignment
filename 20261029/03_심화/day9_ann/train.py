@@ -12,7 +12,8 @@ def train_one_epoch(model, loader, loss_fn, optimizer, device):
         # 매 batch마다 초기화하고 새로운 gradient로 갱신해야 합니다.
         # >>> H07
         # TODO H07: 위 요구사항을 읽고 이 블록을 완성하세요.
-        pass
+        loss.backward()
+        optimizer.step()
         # <<< H07
         total += loss.item() * len(yb)
         count += len(yb)
