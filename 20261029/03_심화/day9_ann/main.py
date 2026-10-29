@@ -40,7 +40,9 @@ for epoch in range(1, 81):
 # 배포 파일에는 미리 학습한 모델이 없습니다. 실행한 본인이 만든 파일만 복원합니다.
 # >>> H09
 # TODO H09: 위 요구사항을 읽고 이 블록을 완성하세요.
-pass
+# 모델 구조는 코드로 재생성하고, 학습한 파라미터와 등록된 버퍼만 저장합니다.
+model_state_path = out / "model_state.pt"
+torch.save(model.state_dict(), model_state_path)
 # <<< H09
 with (out / "training_history.csv").open("w", encoding="utf-8-sig", newline="") as f:
     w=csv.writer(f);w.writerow(["epoch","train_loss_online","valid_loss","valid_accuracy"]);w.writerows(history)
