@@ -9,13 +9,16 @@ loader = DataLoader(TensorDataset(logits, y), batch_size=4, shuffle=False)
 loss_fn = nn.CrossEntropyLoss()
 total_loss, count = 0.0, 0
 batch_means = []
-for xb, yb in loader:
-    loss = loss_fn(xb, yb)
+# loader에 포함된 batch 만큼 반복 수행..
+for xb, yb in loader: # xb = 현재 예측 점수 / yb = 정답값
+    loss = loss_fn(xb, yb) # 현재 예측 점수과 정답 값을 기준으로 손실값 계산
     # 현재 배치 평균 loss에 실제 배치 행 수를 곱해 total_loss에 더하세요.
     # 마지막 배치는 2행입니다. batch_size=4를 곱하면 안 됩니다.
     # >>> H05
     # TODO H05: 위 요구사항을 읽고 이 블록을 완성하세요.
-    total_loss += loss.item()
+    # 실제 입력의 배치 크기를 구해야 하므로 len(xb)로 현재 배치의 크기를 구함
+    # batch_size의 값인 4가 아닌 이유는, 실제 입력 데이터의 크기가 4로 나누어지지 않아 더 적을 가능성이 있기에 임의로 상수로 곱하지 않음
+    total_loss += loss.item() * len(xb)
     # <<< H05
     count += len(yb)
     batch_means.append(loss.item())
