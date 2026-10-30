@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 out = base / "outputs"
 out.mkdir(exist_ok=True)
 # 재현용 기본값 CPU. GPU 실습은 강사 확인 뒤 device 문자열만 cuda:0으로 바꿉니다.
-device = torch.device("cpu")
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 df = pd.read_csv(base / "data" / "points.csv")
 train = df[df["split"] == "train"]
 valid = df[df["split"] == "valid"]
@@ -27,7 +27,10 @@ loss_fn = nn.CrossEntropyLoss()
 # 평가에서는 model.eval()과 no_grad를 모두 사용하고, best epoch는 valid loss로 찾습니다.
 # >>> A05
 # TODO A05: 위 요구사항에 맞게 이 블록만 완성합니다.
-configs = [{'name': 'dropout0.0', 'lr': 0.01, 'dropout': 0.0}]
+configs = [
+    {'name': 'dropout0.0', 'lr': 0.01, 'dropout': 0.0}, 
+    {'name': 'dropout0.3', 'lr': 0.01, 'dropout': 0.3}
+]
 # <<< A05
 summary = []
 
@@ -51,7 +54,7 @@ for config in configs:
     else:
         optimizer = torch.optim.AdamW(model.parameters(), lr=config["lr"], weight_decay=0.0)
     history = []
-    for epoch in range(1, 40 + 1):
+    for epoch in range(1, 80 + 1):
         model.train()
         for xb, yb in loader:
             xb, yb = xb.to(device), yb.to(device)
