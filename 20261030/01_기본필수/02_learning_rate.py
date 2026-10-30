@@ -18,7 +18,7 @@ y_valid = torch.tensor(valid["label"].values, dtype=torch.long)
 # 모델·seed·20 epochs·AdamW·weight_decay=0은 그대로 둡니다.
 # >>> B03
 # TODO B03: 위 요구사항에 맞게 이 블록만 완성합니다.
-learning_rates = [0.001]
+learning_rates = [0.001, 0.01]
 # <<< B03
 loss_fn = nn.CrossEntropyLoss()
 for lr in learning_rates:
