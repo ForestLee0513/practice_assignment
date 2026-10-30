@@ -13,7 +13,7 @@ valid_losses = [0.94,0.81,0.71,0.61,0.53,0.47,0.42,0.38,0.35,0.33,
 # 리스트 위치는 0부터, 여기서 출력할 epoch는 1부터 시작합니다.
 # >>> B05
 # TODO B05: 위 요구사항에 맞게 이 블록만 완성합니다.
-best_epoch = 1
+best_epoch = valid_losses.index(min(valid_losses)) + 1
 # <<< B05
 print("best epoch:", best_epoch, "최소 valid loss:", min(valid_losses))
 plt.figure(figsize=(8, 5))
