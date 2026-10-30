@@ -11,7 +11,7 @@ for i in range(3):
 # 평가 모드의 Dropout은 입력을 그대로 전달하며, gradient 비활성화와는 별개의 기능입니다.
 # >>> B06
 # TODO B06: 위 요구사항에 맞게 이 블록만 완성합니다.
-pass
+dropout.eval() # == dropout.train(mode=False) 와 동일
 # <<< B06
 for i in range(3):
     print("eval", i + 1, dropout(X).tolist())
