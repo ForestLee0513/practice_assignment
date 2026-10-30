@@ -27,7 +27,14 @@ loss_fn = nn.CrossEntropyLoss()
 # batch_size=32는 동일하고 마지막 16건도 학습합니다. BatchNorm을 사용하는 train batch는 2건 이상이어야 합니다.
 # >>> A06
 # TODO A06: 위 요구사항에 맞게 이 블록만 완성합니다.
-configs = [{'name': 'baseline', 'lr': 0.01, 'bn': False}]
+configs = [
+    {'name': '40baseline_disabled', 'lr': 0.01, 'bn': False, 'epoch_count': 40 },
+    {'name': '40baseline_enabled', 'lr': 0.01, 'bn': True, 'epoch_count': 40 },
+    {'name': '80baseline_disabled', 'lr': 0.01, 'bn': False, 'epoch_count': 80 },
+    {'name': '80baseline_enabled', 'lr': 0.01, 'bn': True, 'epoch_count': 80 },
+    {'name': '128baseline_disabled', 'lr': 0.01, 'bn': False, 'epoch_count': 128 },
+    {'name': '128baseline_enabled', 'lr': 0.01, 'bn': True, 'epoch_count': 128 },
+]
 # <<< A06
 summary = []
 
@@ -51,7 +58,7 @@ for config in configs:
     else:
         optimizer = torch.optim.AdamW(model.parameters(), lr=config["lr"], weight_decay=0.0)
     history = []
-    for epoch in range(1, 40 + 1):
+    for epoch in range(1, config['epoch_count'] + 1):
         model.train()
         for xb, yb in loader:
             xb, yb = xb.to(device), yb.to(device)
@@ -83,7 +90,7 @@ for config in configs:
     plt.ylabel("Loss")
     plt.legend()
     plt.tight_layout()
-    plt.savefig(out / f"06_{name}_curves.png", dpi=150)
+    plt.savefig(out / f"06_{config["epoch_count"]}_{name}_curves.png", dpi=150)
     plt.close()
     print(name, "best epoch:", int(best["epoch"]), "best valid loss:", round(best["valid_loss"], 6))
 result = pd.DataFrame(summary)
