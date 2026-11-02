@@ -1,0 +1,3 @@
+split,windows,input_dimensions,latent_dimensions,epochs,mse
+train,53,8,2,40,0.07665272802114487
+valid,13,8,2,40,0.056041620671749115
