@@ -1,0 +1,14 @@
+position,value,role
+0,0.15,past_input
+1,0.3775996,past_input
+2,0.59243834,past_input
+3,0.78314734,past_input
+4,0.93959296,past_input
+5,1.0534109,past_input
+6,1.1184474,past_input
+7,1.1310842,past_input
+8,1.0904298,past_input
+9,0.99836797,past_input
+10,0.8594595,past_input
+11,0.68070364,past_input
+12,0.47117093,next_target
