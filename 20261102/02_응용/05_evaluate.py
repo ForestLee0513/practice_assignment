@@ -39,7 +39,9 @@ for epoch in range(1, 6):
         loss = loss_fn(model(images), labels)
         # BEGIN A05
         # TODO A05: loss 역전파와 가중치 갱신을 순서대로 실행한다.
-        pass
+        # backward를 위한 loss 확인 시 type이 반환되지 않을 수 있으므로 참고하자.
+        loss.backward()
+        optimizer.step()
         # END A05
     # 같은 epoch 말 모델을 eval 모드로 평가해 train/valid의 측정 조건을 맞춘다.
     model.eval()
@@ -72,6 +74,33 @@ print(pd.DataFrame(history).round(4).to_string(index=False))
 print("best epoch:", best_epoch)
 print("혼동행렬 행=실제, 열=예측:\n", cm.tolist())
 print("클래스별 정답 수:", cm.diag().tolist(), "/", cm.sum(1).tolist())
+class_counts = cm.sum(1)
+class_correct = cm.diag()
+class_recall = class_correct.float() / class_counts.clamp_min(1)
+class_metrics = pd.DataFrame({
+    "class": train.classes,
+    "correct": class_correct.tolist(),
+    "total": class_counts.tolist(),
+    "incorrect": (class_counts - class_correct).tolist(),
+    "recall": [float(class_recall[i]) if class_counts[i] > 0 else float("nan")
+               for i in range(len(train.classes))],
+})
+print("클래스별 평가:\n", class_metrics.round(4).to_string(index=False))
+# 실제 클래스별 정답 비율(재현율)이 가장 낮은 클래스를 찾는다.
+# 검증 표본이 없는 클래스는 제외하고, 최저 비율이 같으면 모두 표시한다.
+evaluated_classes = class_metrics.dropna(subset=["recall"])
+if not evaluated_classes.empty:
+    min_recall = evaluated_classes["recall"].min()
+    hardest_classes = evaluated_classes.loc[
+        evaluated_classes["recall"] == min_recall, "class"
+    ].tolist()
+    print("가장 어려운 클래스(최저 재현율):", ", ".join(hardest_classes),
+          f"/ 재현율: {min_recall:.2%}")
+    if len(hardest_classes) > 1:
+        print("최저 재현율이 같아 단일 클래스로 구분할 수 없습니다.")
+else:
+    print("검증 표본이 없어 가장 어려운 클래스를 판단할 수 없습니다.")
+class_metrics.to_csv(out / "class_metrics.csv", index=False)
 pd.DataFrame(history).to_csv(out / "cnn_history.csv", index=False)
 pd.DataFrame(cm.numpy(), index=train.classes, columns=train.classes).to_csv(out / "confusion_matrix.csv")
 pd.DataFrame(dict(file=[Path(p).name for p,_ in valid.samples], actual=actual, predicted=predicted)).to_csv(out / "cnn_predictions.csv", index=False)

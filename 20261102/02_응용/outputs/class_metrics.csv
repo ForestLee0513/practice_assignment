@@ -1,0 +1,3 @@
+class,correct,total,incorrect,recall
+horizontal,10,10,0,1.0
+vertical,10,10,0,1.0
