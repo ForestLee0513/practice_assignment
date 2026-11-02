@@ -26,7 +26,9 @@ train_transform = transforms.Compose([
 ])
 # BEGIN A04
 # TODO A04: valid에는 Resize와 ToTensor만 적용한다.
-valid_transform = train_transform
+valid_transform = transforms.Compose([
+    transforms.Resize((64, 64)), transforms.ToTensor(),
+])
 # END A04
 augmented = [train_transform(image) for _ in range(3)]
 v1, v2 = valid_transform(image), valid_transform(image)
