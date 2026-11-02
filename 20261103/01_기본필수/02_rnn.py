@@ -9,7 +9,7 @@ output, h_n = rnn(x)  # 모든 시점 출력과 마지막 은닉 상태를 따�
 # TODO B02: 은닉 특성 8개를 두 클래스의 점수로 바꾸는 층을 만든다.
 # 필수 위치 인자: in_features=8, out_features=2; bias=True는 기본 선택값.
 # BEGIN B02
-head = nn.Linear(8, 1)
+head = nn.Linear(in_features=8, out_features=2, bias=True)
 # END B02
 logits = head(h_n[-1])  # 마지막 층의 상태: [4,8]
 print("입력:", tuple(x.shape))
