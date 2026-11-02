@@ -21,7 +21,7 @@ rows = []
 for name, layer in operations.items():
     # BEGIN A03
     # TODO A03: 각 downsampling 층을 입력 x에 적용한다.
-    y = x
+    y = layer(x) # dict에
     # END A03
     rows.append(dict(method=name, shape=str(tuple(y.shape)), params=sum(p.numel() for p in layer.parameters())))
 print(pd.DataFrame(rows).to_string(index=False))
