@@ -1,0 +1,3 @@
+pipeline,all_5_equal,mean_mae_to_first
+train,False,0.09426397737115622
+valid,True,0.0
