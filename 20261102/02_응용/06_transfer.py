@@ -33,7 +33,7 @@ for mode in ["head", "partial"]:
         # BEGIN A06
         # TODO A06: partial일 때만 layer4의 미분을 켠다.
         for param in model.layer4.parameters():
-            param.requires_grad = False
+            param.requires_grad = True
         # END A06
         groups.append({"params": model.layer4.parameters(), "lr": 0.0001})
     optimizer = torch.optim.AdamW(groups, weight_decay=0.0001)
