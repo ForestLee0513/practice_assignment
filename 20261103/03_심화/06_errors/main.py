@@ -18,7 +18,7 @@ for name in ["RNN","LSTM","Transformer"]:
     torch.manual_seed(42); result=fit(classifier(name),data,"classification",epochs=25,lr=0.01)
     # TODO D06: 클래스 logits에서 실제 예측 라벨을 추출해 오류 행을 저장한다.
     # BEGIN D06
-    pred=torch.zeros_like(data["valid"]["y"])
+    pred= result["prediction"].argmax(dim=1)
     # END D06
     actual=data["valid"]["y"]
     tables.extend({"model":name,"id":i,"actual":int(y),"prediction":int(p),"error":bool(y!=p)} for i,y,p in zip(data["valid"]["ids"],actual,pred))
