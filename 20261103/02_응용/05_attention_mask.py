@@ -20,7 +20,7 @@ with torch.inference_mode():
     # TODO A05: Padding을 key로 보지 않게 bool Mask를 전달한다.
     # nn.MultiheadAttention의 key_padding_mask: [B,T], True가 제외 위치이다.
     # BEGIN A05
-    masked,weights=attention(x,x,x,average_attn_weights=False)
+    masked,weights=attention(x,x,x,average_attn_weights=False, key_padding_mask=mask)
     # END A05
     # key Mask만으로 padded query의 출력이 0이 되지는 않는다. 집계 때 다시 제외한다.
     mean=(masked*(~mask).unsqueeze(-1)).sum(1)/lengths.unsqueeze(-1)
