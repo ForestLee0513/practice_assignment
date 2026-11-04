@@ -16,12 +16,20 @@ gray=cv2.imread("../data/objects.png",0)
 _, binary=cv2.threshold(gray,127,255,cv2.THRESH_BINARY)
 rows=[]
 for shape_name,shape in [("rect",cv2.MORPH_RECT),("ellipse",cv2.MORPH_ELLIPSE)]:
+    # 입력된 이미지의 비율을 기반으로 커널 크기 지정 (보편적으로 1% ~ 5% 사이로 시작해서 조정함.)
     for size in [3,5]:
+        # 연산 반복횟수 설정
         for iterations in [1,2]:
+            # 커널 모양과 크기에 따라 제거되거나 유지되는 객체의 형태가 달라짐
             kernel=cv2.getStructuringElement(shape,(size,size))
             # >>> TODO H04
             # 현재 kernel과 iterations를 사용하여 binary에 Opening을 적용하세요.
-            result=binary.copy()
+            result=cv2.morphologyEx(
+                src=binary,
+                op=cv2.MORPH_OPEN,
+                kernel=kernel,
+                iterations=iterations
+            )
             # <<< TODO H04
             count, labels, stats, centroids=cv2.connectedComponentsWithStats(result,connectivity=8)
             name=f"{shape_name}_{size}_{iterations}"
