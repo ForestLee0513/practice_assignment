@@ -14,10 +14,17 @@ Path("outputs").mkdir(exist_ok=True)
 
 image = cv2.imread("data/scene.png")
 rows = []
-for name, method in [("nearest", cv2.INTER_NEAREST), ("linear", cv2.INTER_LINEAR), ("area", cv2.INTER_AREA)]:
+methods = (
+    { "name": "nearest", "method": cv2.INTER_NEAREST }, # 인접한 기준으로 보간 / 명확하게 분리되어 있는 픽셀단위
+    { "name": "linear", "method": cv2.INTER_LINEAR }, # 선형보간 / 수채화 느낌 확대
+    { "name": "area", "method": cv2.INTER_AREA }, # 일반적인 확대 / 별도처리 안함
+)
+for item in methods:
+    name = item["name"]
+    method = item["method"]
     # >>> TODO A02
     # 현재 method를 사용해 (너비80, 높이60)으로 축소한 small을 만드세요.
-    small = cv2.resize(image, (80, 60))
+    small = cv2.resize(image, (80, 60), interpolation=method)
     # <<< TODO A02
     large = cv2.resize(small, (320, 240), interpolation=method)
     cv2.imwrite(f"outputs/p02_{name}_small.png", small)
