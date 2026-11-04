@@ -10,7 +10,7 @@ os.chdir(Path(__file__).resolve().parent)
 # 색상 이미지: 한 픽셀의 값 순서는 B, G, R입니다.
 # >>> TODO B01
 # scene.png를 cv2.imread로 읽어 image에 저장하세요. flags를 생략하면 BGR 컬러로 읽습니다.
-image = None
+image = cv2.imread('scene.png')
 # <<< TODO B01
 print("shape:", image.shape)
 print("dtype:", image.dtype)
