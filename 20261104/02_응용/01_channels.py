@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 image = cv2.imread("data/scene.png")
 # >>> TODO A01
 # Matplotlib 표시 전에 BGR을 RGB로 변환하세요. 원본 image는 그대로 유지합니다.
-rgb = image.copy()
+rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB) # cvtcolor로 변환 => COLOR_BGR2RGB로 미리 지정된 상수를 통해 rgb로 변환 (읽는순서 <원본>2<목표>)
 # <<< TODO A01
 # 각각 별도의 Figure입니다. 색공간 순서의 오류를 직접 비교합니다.
 plt.figure(figsize=(5, 4)); plt.imshow(image); plt.title("Wrong: BGR interpreted as RGB"); plt.axis("off")
