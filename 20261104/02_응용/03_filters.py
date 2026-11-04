@@ -15,8 +15,8 @@ Path("outputs").mkdir(exist_ok=True)
 gray = cv2.imread("data/noisy_gray.png", cv2.IMREAD_GRAYSCALE)
 # >>> TODO A03
 # 같은 gray에 Gaussian (5,5), sigmaX=0과 Median ksize=5를 각각 적용하세요.
-gaussian = gray.copy()
-median = gray.copy()
+gaussian = cv2.GaussianBlur(gray, ksize=(5,5), sigmaX=0)
+median = cv2.medianBlur(gray, ksize=5)
 # <<< TODO A03
 rows = []
 for name, result in [("original", gray), ("gaussian", gaussian), ("median", median)]:
