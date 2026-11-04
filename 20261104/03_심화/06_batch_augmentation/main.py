@@ -20,12 +20,13 @@ def augment(image,seed):
     result=cv2.flip(image,1) if flip else image.copy()
     # >>> TODO H06
     # beta를 적용하되 uint8의 순환을 막고 값 범위를 지키세요. 원본 image는 수정하지 않습니다.
-    result=result.copy()
+    result=np.clip(result.astype(np.float32)+beta,0,255).astype(np.uint8)
     # <<< TODO H06
     return result,{"seed":seed,"flip":flip,"beta":beta}
 
 with open("../data/manifest.csv",encoding="utf-8-sig",newline="") as f:
     sources=list(csv.DictReader(f))
+
 rows=[]
 for row in sorted(sources,key=lambda r:r["sample_id"]):
     if row["split"]!="train":
