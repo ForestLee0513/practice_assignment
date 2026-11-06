@@ -10,7 +10,15 @@ for image in manifest.itertuples():
         cls,cx,cy,w,h=map(float,line.split())
         # >>> A03
         # 요구: 정규화 면적 w*h와 원본 pixel 기준 가로세로비를 기록하세요.
-        pass  # TODO A03: 위 요구사항의 핵심 코드를 작성하세요.
+        rows.append(
+            dict(
+                image_id=image.image_id,
+                split=image.split,
+                class_id=int(cls),
+                area_ratio=w * h,
+                aspect_ratio=(w * image.width) / (h * image.height)
+            )
+        )
         # <<< A03
 r=pd.DataFrame(rows);r.to_csv(out/"label_audit.csv",index=False)
 print(r.groupby(["split","class_id"]).size().unstack(fill_value=0).to_string())
