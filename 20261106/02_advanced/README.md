@@ -2,7 +2,7 @@
 
 이 README 하나로 실습 01~08을 진행합니다.
 
-입문용 Jupyter: [문서 학습 순서](docs/README.md)에서 좌표 변환 → NMS 순서로 읽을 수 있습니다.
+입문용 Jupyter: [문서 학습 순서](docs/README.md)에서 좌표 변환 → NMS → 라벨 분석 순서로 읽을 수 있습니다.
 
 **준비 확인:** 실제 YOLO 실행 파일은 `ultralytics`·`lap` 설치와 강사가 준비한 `data/demo.pt`가 필요합니다. 배포 시 PT는 없습니다. 상위 README의 준비 절차를 먼저 확인하세요.
 
