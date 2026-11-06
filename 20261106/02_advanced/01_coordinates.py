@@ -9,6 +9,17 @@ b=table[["x1","y1","x2","y2"]].to_numpy(float);width,height=160,128
 # >>> A01
 # 요구: 중심 x/y와 폭/높이를 계산하고 각 축 크기로 정규화하세요.
 pass  # TODO A01: 위 요구사항의 핵심 코드를 작성하세요.
+x1 = b[:, 0]
+y1 = b[:, 1]
+x2 = b[:, 2]
+y2 = b[:, 3]
+
+yolo = np.column_stack((
+    (x1 + x2) / (2 * width),
+    (y1 + y2) / (2 * height),
+    (x2 - x1) / width,
+    (y2 - y1) / height
+))
 # <<< A01
 pixel=yolo*np.array([width,height,width,height])
 restored=np.column_stack((pixel[:,0]-pixel[:,2]/2,pixel[:,1]-pixel[:,3]/2,pixel[:,0]+pixel[:,2]/2,pixel[:,1]+pixel[:,3]/2))
