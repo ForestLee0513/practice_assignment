@@ -9,10 +9,14 @@ if __name__=="__main__":
     out=BASE/"outputs";out.mkdir(exist_ok=True)
     config={"train":str(BASE/"data/images/train"),"val":str(BASE/"data/images/val"),"names":["square","circle","triangle"]}
     path=out/"dataset_active.yaml";path.write_text(yaml.safe_dump(config),encoding="utf-8")
-    model=YOLO(str(BASE/"data/demo.pt"))
+    model=YOLO(str(out/"cli_smoke/weights/last.pt"))
     # >>> A05
     # 요구: model.val에 data=path, split='val'을 전달하세요.
-    pass  # TODO A05: 위 요구사항의 핵심 코드를 작성하세요.
+    metrics=model.val(
+        data=str(path), split="val", imgsz=160, batch=4,
+        device=0 if torch.cuda.is_available() else "cpu", workers=0,
+        plots=False, project=str(out), name="validation", exist_ok=True
+    )
     # <<< A05
     summary={"map50":float(metrics.box.map50),"map50_95":float(metrics.box.map),"split":"val"}
     (out/"validation_metrics.json").write_text(json.dumps(summary,indent=2),encoding="utf-8")
