@@ -16,7 +16,7 @@ for conf,nms_iou in [(0.25,0.5),(0.5,0.5),(0.25,0.95)]:
     # >>> A02
     # 요구: 같은 클래스끼리만 중복을 제거하는 batched_nms를 적용하세요.
     # 반환 index는 ids로 줄인 배열 기준이므로 다시 원본 index로 바꿉니다.
-    pass  # TODO A02: 위 요구사항의 핵심 코드를 작성하세요.
+    keep=batched_nms(boxes[ids], scores[ids], classes[ids], nms_iou)
     # <<< A02
     used=set();tp=0
     for i in keep.tolist():
