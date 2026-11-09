@@ -7,8 +7,11 @@ for name in ['doc01', 'doc02', 'doc03']:
     image = cv2.imread(str(base / f'{name}.png'))
     # 아래 두 줄만 완성합니다. 출력은 채널이 없는 (높이, 너비) 배열입니다.
 # TODO B01
-    gray = image[:, :, 0] * 0
-    threshold, binary = 0, gray
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    threshold, binary = cv2.threshold(
+        gray, 0, 255,
+        cv2.THRESH_BINARY | cv2.THRESH_OTSU
+    )
 # TODO 끝 B01
     cv2.imwrite(str(base / f'p01_{name}_gray.png'), gray)
     cv2.imwrite(str(base / f'p01_{name}_binary.png'), binary)
