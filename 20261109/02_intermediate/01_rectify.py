@@ -15,7 +15,12 @@ corners = np.float32(lesson['perspective']['corners'])  # TL, TR, BR, BL 제공
 size = (1000, 700)  # width, height
 matrix = cv2.getPerspectiveTransform(corners, np.float32([[0,0],[999,0],[999,699],[0,699]]))
 # TODO A01
-rectified = cv2.resize(image, size)
+rectified = cv2.warpPerspective(
+    image, matrix, size,
+    flags=cv2.INTER_LINEAR,
+    borderMode=cv2.BORDER_CONSTANT,
+    borderValue=(255,255,255)
+)
 # TODO 끝 A01
 gray = cv2.cvtColor(rectified, cv2.COLOR_BGR2GRAY)
 adaptive = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 31, 11)
