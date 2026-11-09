@@ -9,7 +9,15 @@ rows = []
 for answer in doc['mock_vlm']['responses']:
     question = lesson['questions'][answer['field']]
 # TODO B05
-    messages = []
+    messages = [
+        {
+            'role': 'user',
+            'content': [
+                {'type': 'image', 'path': str(base / doc['file'])},
+                {'type': 'text', 'text': question},
+            ],
+        }
+    ]
 # TODO 끝 B05
     rows.append({'backend': 'mock', 'messages': messages, 'response': answer, 'model_id': None, 'inference_ms': None})
     print(question, '->', answer['answer'])
