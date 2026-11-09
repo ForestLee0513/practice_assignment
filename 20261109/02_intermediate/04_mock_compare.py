@@ -15,7 +15,7 @@ for name, doc in lesson['documents'].items():
     for answer in doc['mock_vlm']['responses']:
         # 문자열 포함 검사는 1차 점검일 뿐 의미상 올바른 답임을 증명하지 않습니다.
 # TODO A04
-        evidence_found = False
+        evidence_found = answer['evidence'] in doc['ocr']['text']
 # TODO 끝 A04
         rows.append({'document_id':name, 'backend':'mock', **answer, 'evidence_found':evidence_found, 'review':not evidence_found})
 table = pd.DataFrame(rows)
