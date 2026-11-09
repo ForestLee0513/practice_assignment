@@ -48,9 +48,14 @@ for name, doc in lesson['documents'].items():
         # 각 문서의 Mock VLM 응답을 실제 정답과 비교하고,
         # 전체 응답 중 정확히 일치한 필드 개수를 집계합니다.
         # ========================================================
-        exact = False
+        field = item['field']
+        answer = item['answer']
+        evidence = item['evidence']
+        truth = doc['truth'][field]
+
+        exact = answer == truth
         # TODO 끝 A05
-        grounded = item['evidence'] in doc['ocr']['text']
+        grounded = evidence in doc['ocr']['text']
         rows.append({'document_id':name, 'field':item['field'], 'backend':'mock', 'exact':exact, 'evidence_found':grounded, 'review':not grounded})
 table = pd.DataFrame(rows)
 table.to_csv(out / 'p05_scores.csv', index=False, encoding='utf-8-sig')
