@@ -1,62 +1,83 @@
-# 2026-11-10 (화) Day17 · FastAPI Web/REST API 실습
+# Day17 · FastAPI 지식 관리 API 실습 (수강생용)
 
-강의: 생성형 AI·LLM 및 RAG 엔지니어링 1/18. 공통 사례는 상품 조회·등록 서비스입니다. **PPT 14·25·37·49·61·72·83·92쪽의 실습01~08**과 연결합니다.
+**기준: 2026년 11월 10일 / 84장 PPT / 기본필수·응용·심화 / 마지막 일일프로젝트 포함**
 
-## 난이도 선택
+오늘은 원본 지식을 HTTP로 생성·조회·수정·삭제하는 작은 서비스를 만듭니다. RAG·Agent·LLM·DB는 아직 연결하지 않습니다.
 
-| 단계 | 구조·핵심 부담 | TODO |
-|---|---|---:|
-| 기본필수 | 평평한 폴더, Route 골격·입력 모델 제공, 1~2문장 구현 중심 | 9 |
-| 응용 | data/templates/static, 필터·생성·응답·정렬·개수 제한 직접 연결 | **10 (기존8+2)** |
-| 심화 | Router/Service/Schema 분리, 조건 조합·페이지·테스트2개 | **12** |
-| 특심화 | 버전 API·Repository·Dependency·오류 계약·멱등성·요청 ID·계약 테스트 | 10 |
+## 1. 시작 순서
 
-**기본필수→응용→심화→특심화는 모두 수행할 연속 과제가 아니라 선택 학습 경로**입니다. 초급은 기본필수만으로 공통100점 평가 기준을 충족합니다. 단계가 높아질수록 요구사항 검증과 변경 책임이 중요해집니다.
-
-현재 자료는 Python·FastAPI만으로 동작합니다. 외부 API Key·모델 다운로드·DB·GPU는 필요 없습니다. 입력 상품은 정상 합성3건입니다. 상품 데이터는 메모리에서만 변경되며 원본 파일은 쓰지 않습니다.
-
-## 먼저 읽을 문서
-
-비전공자는 `01_기본필수/README.md`, 응용은 `02_응용/README.md`, 심화는 `03_심화/day17_fastapi/README.md`, 특심화는 `04_특심화/day17_api_lab/README.md`입니다. **각 문서에 현재 작업 폴더·실행 명령·요청·기대 결과가 있습니다.**
-
-## 환경 준비 — 최초 한 번
-
-이미 수업용 Python 가상환경이 활성화되어 있으면 다시 만들지 않습니다. 압축은 먼저 완전히 해제합니다. ZIP 내부에서 파일을 실행하지 마세요.
-
-아래 명령은 **`수강생용` 또는 `강사용` 역할 폴더에서** 시작합니다. VS Code에서 폴더를 열고 `터미널 → 새 터미널`을 선택하세요.
+압축을 푼 **수강생용 폴더를 VS Code에서 폴더 열기** 합니다. 압축파일 안에서 직접 실행하지 마세요.
+가능하면 `C:\workspace\day17`처럼 짧은 로컬 경로를 사용하세요. GPU·CUDA·API 키는 필요 없습니다.
+Python 문법은 3.10 이상, 실제 검수 버전과 한계는 검수결과.md에 기록했습니다.
 
 ```powershell
 python --version
 python -m venv .venv
-.venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\Activate.ps1
+python tools/show_versions.py
 ```
 
-PowerShell에서 활성화가 차단되면 실행 정책을 무작정 변경하지 말고 CMD 터미널에서 `.venv\Scripts\activate.bat`를 실행하거나, 역할 폴더에서 `.venv\Scripts\python.exe -m pip install -r requirements.txt`를 사용하세요. 이미 활성화된 터미널에서는 이후 `python` 명령을 사용합니다. macOS/Linux 활성화는 `source .venv/bin/activate`입니다.
+VS Code의 Python: Select Interpreter에서 이 폴더의 .venv를 선택합니다.
+활성화가 차단되면 정책을 바꾸지 말고 .venv Python 직접 실행 안내를 따릅니다.
 
-**VS Code 인터프리터도 이 `.venv`를 선택**합니다. 본 자료는 별도 모델·GPU·외부 API Key·DB 서버가 필요하지 않습니다. 설치 시 패키지 다운로드에는 인터넷이 필요합니다.
+심화를 선택한 경우만 추가 설치합니다.
 
-## 서버를 여는 법과 끄는 법
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements-test.txt
+```
 
-실행 명령을 친 터미널은 **서버가 요청을 기다리는 동안 계속 켜 둡니다.** 브라우저 주소창에는 파일 경로가 아니라 `http://127.0.0.1:8000/health` 같은 주소를 넣습니다. 한 서버를 끝내고 다음 파일로 이동할 때는 터미널에서 **Ctrl+C**를 먼저 누릅니다.
+Linux/macOS는 `.venv/bin/python -m pip install -r requirements.txt`, `source .venv/bin/activate`를 사용합니다.
+같은 수준의 01→07을 진행한 뒤 08 안내를 읽고 07의 코드를 재사용합니다.
 
-- `python 파일명.py`만 실행하면 앱을 선언하고 끝날 수 있습니다. **`python -m uvicorn 모듈명:app`**으로 실행하세요.
-- `모듈명`은 파일에서 `.py`를 뺀 이름, `app`은 Python 변수 이름입니다. URL과 파일 경로는 다릅니다.
-- `--reload`는 개발 중 코드 변경을 반영합니다. 파일을 저장해 서버가 재시작되면 메모리의 상품도 초기화됩니다.
-- 8000 포트를 이미 쓰면 이전 서버를 종료하거나 `--port 8001`로 바꾸고 브라우저 주소의 포트도 바꾸세요.
-- 브라우저 주소창은 GET을 보내는 연습입니다. POST는 `/docs`에서 `Try it out → JSON 입력 → Execute`로 보냅니다.
-- `/docs`는 Swagger UI 자원을 CDN에서 읽습니다. 인터넷 차단으로 UI만 안 열리면 `/openapi.json`, 직접 API 주소, `curl.exe`로 확인하세요. API 자체가 외부 인터넷을 쓰는 것은 아닙니다.
+## 2. 한 수준 선택
 
-개발 서버는 **127.0.0.1 로컬에서만** 사용합니다. 인증·권한·영구 저장·운영 배포는 이번 완성물의 범위가 아닙니다.
+| 수준 | 핵심 앱 구조 | Python TODO 블록 | 학습 초점 |
+|---|---|---:|---|
+| [기본필수](01_기본필수/README.md) | main.py·storage.py·data | 15 | 핵심 동작과 수동 확인 |
+| [응용](02_응용/README.md) | 기본 구조 + queries.py | 23 | 직접 작성 확대·category·함수 분리 |
+| [심화](03_심화/README.md) | 함수 분리 → app/Router·Schema·Repository·tests | 30 | 책임 분리·임시 파일 자동 검사 |
 
-## 날짜·범위·보안
+폴더가 많은 것은 교시 시작점을 따로 제공하기 때문입니다. 기본필수 앱 자체의 핵심 Python 파일은 1~2개입니다.
+TODO의 개수는 BEGIN/END로 묶은 Python 구현 블록 수입니다. 역할 설명·개인 지식 초안·기록 과제는 별도입니다.
 
-강의일은 2026년11월10일입니다. 다음11월11일은 PostgreSQL·SQL, 11월12일은 DB 연동을 다룹니다. 인증·결제·실제 AI 추론·운영 배포는 오늘의 구현 범위가 아닙니다. 실습 서버를 공인망에 공개하지 마세요. 데이터와 로그에는 실제 개인정보·비밀번호·API Key를 넣지 않습니다.
+## 3. 첫 서버
 
-## 제출
+```powershell
+cd ".\01_기본필수\01_first_server"
+# main.py의 B01-01을 먼저 완성한 뒤 실행합니다.
+python -m uvicorn main:app --reload
+```
 
-기본필수·응용은 해당 폴더와 README 설명란, 심화·특심화는 프로젝트·테스트 결과·보고서를 제출합니다. `.venv`, `__pycache__`, `.pytest_cache`를 압축해서 제출하지 않습니다. 각 단계의 TODO는 `# >>> ID`와 `# <<< ID` 사이에 있습니다. 제공 코드를 지우지 말고 지정된 블록만 완성하세요.
+브라우저에 `http://127.0.0.1:8000/health`와 `http://127.0.0.1:8000/docs`를 엽니다.
+앱은 기본적으로 로컬에만 엽니다. --workers 옵션이나 외부 공개 옵션을 추가하지 않습니다.
+기본필수·응용과 심화 01~05는 main:app, 심화 06~07은 app.main:app입니다.
 
-## 검증 범위
+## 4. 수강생용과 강사용
 
-실제 검수 버전은 requirements.txt 및 강사용 운영/검수결과에 기록합니다. Linux에서 TestClient·로컬 Uvicorn HTTP·HTML 렌더를 확인합니다. Windows/macOS 직접 실행·외부 배포·원격 CI는 별도 검증이 필요합니다. 자료 안의 TODO는 미완성 상태가 의도된 것이며, 서버 기동·200 응답만으로 완료로 판단하지 않습니다.
+수강생용의 미완성 코드는 NotImplementedError 또는 Route 등록 전 pass로 명확히 표시했습니다.
+TODO 주석의 요구사항을 구현하고, 같은 블록의 미완성 표시를 제거합니다. 정답을 쓰지 않고 pass로 숨기지 마세요.
+같은 ID·파일·함수가 강사용에 대응합니다. 이전 교시의 기능은 다음 교시 시작본에 완성 골격으로 포함됩니다.
+기본필수는 pytest를 사용하지 않아도 됩니다. 심화 테스트는 실제 작업 파일이 아닌 tmp_path를 사용합니다.
+
+## 5. 데이터와 과제
+
+각 02~07은 자체 data/knowledge.json과 변경하지 않는 knowledge.seed.json을 가집니다.
+초기화가 정말 필요할 때만 서버 종료 후 `python reset_data.py --confirm-reset`을 실행합니다. 기존 파일은 백업됩니다.
+08의 A/B/C 프로젝트 중에는 초기화하지 않습니다. 07의 `일일프로젝트_기록.md`에 실제 ID·N·파일 상태를 적습니다.
+
+공통 API 계약은 [공통안내/API_계약.md](공통안내/API_계약.md), 문제 해결은 [공통안내/오류해결.md](공통안내/오류해결.md)를 확인합니다.
+
+## 6. /docs 대안과 보조 도구 (필수 아님)
+
+다른 터미널을 수강생용 루트에서 열고 활성화한 뒤 실행할 수 있습니다.
+
+```powershell
+python tools/send_request.py GET http://127.0.0.1:8000/api/knowledge
+python tools/send_request.py POST http://127.0.0.1:8000/api/knowledge --json-file 공통안내/요청예시/create.json
+```
+
+PUT·DELETE는 방금 받은 실제 ID로 호출합니다. 204에는 본문이 없습니다. 이 도구는 예상 404·422에도 종료코드 2를 돌려 상태를 구분합니다.
+현재 교시 폴더에서 `python ../../tools/check_todos.py .`로 미완성 표시를 찾을 수 있습니다. 이것은 정답 채점기가 아닙니다.
+
+별도 제공된 완성형 참고 MVP는 수업 중 전체 구조를 참고하기 위한 자료입니다. 수강생용 ZIP에는 정답본이나 MVP를 포함하지 않았습니다.

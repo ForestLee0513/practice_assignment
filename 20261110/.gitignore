@@ -1,7 +1,7 @@
 .venv/
 __pycache__/
-*.py[cod]
 .pytest_cache/
-.env
-outputs/*
-!outputs/.gitkeep
+*.pyc
+*.tmp
+*.backup_*.json
+outputs/
