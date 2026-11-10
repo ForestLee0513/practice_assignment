@@ -42,7 +42,7 @@ def test_create_and_read_back(isolated_client):
     # BEGIN H03-03
     # TODO H03-03: 초기 3건 기준 생성된 entry가 요청 필드와 새 id=4를 포함하는지 검사하세요.
     # 아래 미완성 표시를 지우고 요구한 코드를 작성하세요.
-    raise NotImplementedError("H03-03를 먼저 완성하세요.")
+    assert entry == dict(payload, id=4)
     # END H03-03
     assert client.get(f"/api/knowledge/{entry['id']}").json() == entry
     saved = json.loads(path.read_text(encoding="utf-8"))
@@ -69,7 +69,8 @@ def test_invalid_post_preserves_file(isolated_client, payload):
     # BEGIN H03-04
     # TODO H03-04: 잘못된 입력에 422가 나오고 파일이 변경되지 않았는지 모두 검사하세요.
     # 아래 미완성 표시를 지우고 요구한 코드를 작성하세요.
-    raise NotImplementedError("H03-04를 먼저 완성하세요.")
+    assert r.status_code == 422
+    assert path.read_bytes() == before
     # END H03-04
 
 

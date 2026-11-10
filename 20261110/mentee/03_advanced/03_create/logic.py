@@ -24,11 +24,17 @@ def create(fields: dict) -> dict:
         # BEGIN H03-01
         # TODO H03-01: fields를 복사한 entry를 만들고 현재 next_id를 id로 지정하세요.
         # 아래 미완성 표시를 지우고 요구한 코드를 작성하세요.
-        raise NotImplementedError("H03-01를 먼저 완성하세요.")
+        next_id = data['next_id']
+        entry = dict(fields)
+        entry['id'] = next_id
+        
         # END H03-01
         # BEGIN H03-02
         # TODO H03-02: entry를 추가하고 다음 ID를 증가시켜 data 전체를 저장하세요.
         # 아래 미완성 표시를 지우고 요구한 코드를 작성하세요.
-        raise NotImplementedError("H03-02를 먼저 완성하세요.")
+        data['entries'].append(entry) # 데이터 추가
+        data['next_id'] += 1 # 증강
+        write_data(data)
         # END H03-02
     return entry
+
