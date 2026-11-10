@@ -21,7 +21,8 @@ def test_list_and_filter(isolated_client):
     # BEGIN H07-04
     # TODO H07-04: 없는 category를 조회한 목록이 200과 빈 배열인지 검사하세요.
     # 아래 미완성 표시를 지우고 요구한 코드를 작성하세요.
-    raise NotImplementedError("H07-04를 먼저 완성하세요.")
+    assert empty.status_code == 200
+    assert empty.json() == []
     # END H07-04
     assert path.read_bytes() == before
 
@@ -68,7 +69,8 @@ def test_invalid_post_preserves_file(isolated_client, payload):
     # BEGIN H07-03
     # TODO H07-03: 잘못된 입력이 422이며 저장 파일을 바꾸지 않는지 검사하세요.
     # 아래 미완성 표시를 지우고 요구한 코드를 작성하세요.
-    raise NotImplementedError("H07-03를 먼저 완성하세요.")
+    assert r.status_code == 422
+    assert path.read_bytes() == before
     # END H07-03
 
 

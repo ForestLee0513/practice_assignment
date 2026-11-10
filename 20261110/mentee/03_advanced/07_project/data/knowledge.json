@@ -1,5 +1,5 @@
 {
-  "next_id": 4,
+  "next_id": 7,
   "entries": [
     {
       "id": 1,
@@ -18,6 +18,18 @@
       "title": "입력 오류",
       "category": "api",
       "content": "422이면 입력값을 확인한다."
+    },
+    {
+      "title": "파일 보관",
+      "content": "개인 폴더에 보관합니다.",
+      "category": "learning",
+      "id": 4
+    },
+    {
+      "title": "질문 방법",
+      "content": "오류 메시지와 함께 질문합니다.",
+      "category": "help",
+      "id": 5
     }
   ]
 }
