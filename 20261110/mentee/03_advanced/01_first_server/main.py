@@ -9,5 +9,5 @@ def health():
     # BEGIN H01-01
     # TODO H01-01: status=ok인 dict를 반환하는 health를 완성하세요.
     # 아래 미완성 표시를 지우고 요구한 코드를 작성하세요.
-    raise NotImplementedError("H01-01를 먼저 완성하세요.")
+    return { 'status': 'ok' }
     # END H01-01
