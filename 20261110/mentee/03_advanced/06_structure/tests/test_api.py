@@ -135,6 +135,8 @@ def test_openapi_and_response_fields(isolated_client):
     # BEGIN H06-04
     # TODO H06-04: 상세 응답의 키가 id·title·content·category 네 가지인지 검사하세요.
     # 아래 미완성 표시를 지우고 요구한 코드를 작성하세요.
-    raise NotImplementedError("H06-04를 먼저 완성하세요.")
+    required_keys = {"id", "title", "content", "category"}
+    assert set(r.json()) == required_keys
+
     # END H06-04
     assert client.get("/docs").status_code == 200
