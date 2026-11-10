@@ -104,7 +104,8 @@ def test_delete_empty_body_and_other_entries(isolated_client):
     # BEGIN H05-03
     # TODO H05-03: 삭제 상태가 204이고 실제 응답 바이트가 비어 있는지 확인하세요.
     # 아래 미완성 표시를 지우고 요구한 코드를 작성하세요.
-    raise NotImplementedError("H05-03를 먼저 완성하세요.")
+    assert r.status_code == 204
+    assert r.content == b""
     # END H05-03
     assert client.get("/api/knowledge/2").status_code == 404
     saved = json.loads(path.read_text(encoding="utf-8"))
@@ -120,7 +121,7 @@ def test_delete_errors_preserve_file(isolated_client):
     # BEGIN H05-04
     # TODO H05-04: 404와 422 삭제 요청 이후 파일 내용이 이전과 같은지 확인하세요.
     # 아래 미완성 표시를 지우고 요구한 코드를 작성하세요.
-    raise NotImplementedError("H05-04를 먼저 완성하세요.")
+    assert path.read_bytes() == before
     # END H05-04
 
 

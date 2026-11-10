@@ -40,5 +40,5 @@ def delete_knowledge(knowledge_id: int):
     # BEGIN H05-02
     # TODO H05-02: 삭제 성공 시 본문 없는 204를 반환하세요.
     # 아래 미완성 표시를 지우고 요구한 코드를 작성하세요.
-    raise NotImplementedError("H05-02를 먼저 완성하세요.")
+    return Response(status_code=204)
     # END H05-02
