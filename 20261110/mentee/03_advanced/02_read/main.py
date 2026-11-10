@@ -19,6 +19,7 @@ def get_knowledge(knowledge_id: int):
     # BEGIN H02-03
     # TODO H02-03: 조회 결과가 None이면 HTTP의 404로 변환하세요.
     # 아래 미완성 표시를 지우고 요구한 코드를 작성하세요.
-    raise NotImplementedError("H02-03를 먼저 완성하세요.")
+    if entry == None:
+        raise HTTPException(status_code=404, detail="Item not found")
     # END H02-03
     return entry

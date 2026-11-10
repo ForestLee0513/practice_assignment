@@ -20,6 +20,10 @@ def find_entry(knowledge_id: int) -> dict | None:
     # BEGIN H02-02
     # TODO H02-02: 항목의 id와 knowledge_id가 일치하면 그 dict를 반환하세요. 없으면 아래 None으로 진행하세요.
     # 아래 미완성 표시를 지우고 요구한 코드를 작성하세요.
-    raise NotImplementedError("H02-02를 먼저 완성하세요.")
-    # END H02-02
+    entries = data['entries']
+    data_index = next((index for (index, d) in enumerate(entries) if d["id"] == knowledge_id), None)
+
+    if data_index is not None:
+        return entries[data_index]
+    
     return None
