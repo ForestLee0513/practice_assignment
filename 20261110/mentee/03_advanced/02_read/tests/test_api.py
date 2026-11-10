@@ -34,5 +34,5 @@ def test_detail_and_errors(isolated_client):
     # BEGIN H02-04
     # TODO H02-04: 정상·404·422 GET 이후 파일 바이트가 before와 같은지 검사하세요.
     # 아래 미완성 표시를 지우고 요구한 코드를 작성하세요.
-    raise NotImplementedError("H02-04를 먼저 완성하세요.")
+    assert path.read_bytes() == before
     # END H02-04
