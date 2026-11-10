@@ -8,10 +8,9 @@ def test_health(isolated_client):
     # BEGIN H01-02
     # TODO H01-02: r의 HTTP 상태가 200인지 assert로 검사하세요.
     # 아래 미완성 표시를 지우고 요구한 코드를 작성하세요.
-    raise NotImplementedError("H01-02를 먼저 완성하세요.")
+    assert r.status_code == 200
     # END H01-02
     # BEGIN H01-03
     # TODO H01-03: r의 JSON 본문이 정확히 status=ok인지 검사하세요.
-    # 아래 미완성 표시를 지우고 요구한 코드를 작성하세요.
-    raise NotImplementedError("H01-03를 먼저 완성하세요.")
+    assert r.json() == { "status": "ok" }
     # END H01-03
