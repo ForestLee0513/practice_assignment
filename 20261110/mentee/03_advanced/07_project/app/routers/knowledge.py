@@ -34,7 +34,6 @@ def delete_knowledge(knowledge_id: int):
         raise HTTPException(404, "Knowledge not found")
     # BEGIN H07-02
     # TODO H07-02: Repository 삭제가 성공한 경우 빈 204 응답을 반환하세요.
-    # 아래 미완성 표시를 지우고 요구한 코드를 작성하세요.
-    raise NotImplementedError("H07-02를 먼저 완성하세요.")
+    return Response(status_code=204)
     # END H07-02
 
