@@ -10,7 +10,7 @@ def list_entries(category: str | None = None) -> list[dict]:
     # BEGIN H02-01
     # TODO H02-01: 읽고 필터링한 entries 목록을 반환하세요. 저장 함수를 호출하지 마세요.
     # 아래 미완성 표시를 지우고 요구한 코드를 작성하세요.
-    raise NotImplementedError("H02-01를 먼저 완성하세요.")
+    return entries
     # END H02-01
 
 
