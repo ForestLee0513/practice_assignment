@@ -83,9 +83,9 @@ def test_update_preserves_id_count_and_other_entries(isolated_client):
         assert r.json() == dict(payload, id=2)
     saved = json.loads(path.read_text(encoding="utf-8"))
     # BEGIN H04-04
-    # TODO H04-04: 두 번 수정한 뒤 next_id와 항목 수가 변하지 않았는지 검사하세요.
-    # 아래 미완성 표시를 지우고 요구한 코드를 작성하세요.
-    raise NotImplementedError("H04-04를 먼저 완성하세요.")
+    # 두 번 수정해도 다음 ID와 전체 항목 수는 유지되어야 합니다.
+    assert saved["next_id"] == before["next_id"]
+    assert len(saved["entries"]) == len(before["entries"])
     # END H04-04
     assert saved["entries"][0] == before["entries"][0]
     assert saved["entries"][2] == before["entries"][2]

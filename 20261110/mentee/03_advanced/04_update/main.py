@@ -31,6 +31,7 @@ def update_knowledge(knowledge_id: int, payload: KnowledgeWrite):
     # BEGIN H04-03
     # TODO H04-03: 데이터 함수가 None을 반환하면 Router에서 404를 보내세요.
     # 아래 미완성 표시를 지우고 요구한 코드를 작성하세요.
-    raise NotImplementedError("H04-03를 먼저 완성하세요.")
+    if updated is None:
+        raise HTTPException(404, "Knowledge not found")
     # END H04-03
     return updated
