@@ -26,14 +26,14 @@ SELECT 1 AS connected;
 -- TODO H01_01
 -- 현재 연결한 DB 이름을 반환하는 함수를 넣으세요. 기대 이름은 knowledge_lab입니다.
 -- 힌트: current_database(). 이 명령은 새 DB에 접속하는 명령이 아닙니다.
-SELECT __TODO_DB_FUNCTION__ AS database_name;
+SELECT current_database() AS database_name;
 -- END TASK H01_01
 
 -- @step E1_USER expect=00000 capture=- reconnect=false
 -- BEGIN TASK H01_02
 -- TODO H01_02
 -- 현재 DB 역할과 서버 버전을 조회하세요. 비밀번호를 결과·기록에 적지 마세요.
-SELECT __TODO_USER__ AS user_name, __TODO_VERSION__ AS server_version;
+SELECT current_user AS user_name, version() AS server_version;
 -- END TASK H01_02
 
 -- @step E1_ENCODING expect=00000 capture=- reconnect=false
