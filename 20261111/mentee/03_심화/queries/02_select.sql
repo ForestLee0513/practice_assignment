@@ -30,7 +30,7 @@ SELECT id, title, category_id FROM __TODO_TABLE__ ORDER BY id;
 -- TODO H02_02
 -- WHERE를 넣어 S0의 서버 실행 지식(id=2) 한 건만 조회하세요. 실행 전 실제 ID를 확인합니다.
 SELECT id, title, content FROM public.knowledge
-__TODO_WHERE__ id = 2;
+WHERE id = 2;
 -- END TASK H02_02
 
 -- @step E2_CATEGORY expect=00000 capture=- reconnect=false
@@ -39,7 +39,7 @@ __TODO_WHERE__ id = 2;
 -- 분류 1의 지식을 ID 오름차순으로 조회하세요. S0에서는 id 1·3 두 행입니다.
 SELECT id, title FROM public.knowledge
 WHERE category_id = 1
-__TODO_ORDER__ id;
+ORDER BY id;
 -- END TASK H02_03
 
 -- @step E2_EMPTY expect=00000 capture=- reconnect=false
@@ -51,18 +51,18 @@ SELECT id, title FROM public.knowledge WHERE id=-1;
 -- 분류 1이면서 제목에 '실습'이 포함된 지식을 조회하세요. ID 오름차순, 최대 1행입니다.
 -- ILIKE는 문자열 패턴 검색이며 의미 검색이 아닙니다.
 SELECT id, title FROM public.knowledge
-WHERE __TODO_CATEGORY_AND_TITLE__
+WHERE category_id = 1 AND title LIKE '%실습%'
 ORDER BY id
-__TODO_LIMIT__;
+LIMIT 1;
 -- END TASK H02_04
 
 -- @step E2_NULL expect=00000 capture=- reconnect=false
 -- BEGIN TASK H02_05
 -- TODO H02_05
 -- 독립 VALUES 표에서 NULL만 남기는 조건을 작성하세요. 빈 문자열은 제외하고, 본 지식 표의 NOT NULL을 제거하지 않습니다.
-SELECT label, label IS NULL AS is_missing
-FROM (VALUES (NULL::text), (''::text), ('안내')) AS s(label)
-WHERE __TODO_NULL_TEST__;
+SELECT label, label IS NULL AS is_missing -- label과 label이 null인지의 확인하는 bool을 is_missing 이라는 필드로 불러옴
+FROM (VALUES (NULL::text), (''::text), ('안내')) AS s(label) -- label에서 null로 되어 있으면 형변환을 진행 후 임시 필드 생성
+WHERE label IS NULL; -- label이 실제로 null인 경우에만 값 반환
 -- END TASK H02_05
 
 -- @step E2_TIE expect=00000 capture=- reconnect=false
