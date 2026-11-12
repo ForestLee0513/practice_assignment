@@ -28,11 +28,21 @@ def get_knowledge(db: Session, knowledge_id: int):
     return item
 
 def create_knowledge(db: Session, payload: KnowledgeWrite):
-    with transaction(db):
-    # TODO H09: 분류·지식 추가를 같은 Transaction 경계에서 commit하고 재조회하세요.
-        category = repo.get_or_create_category(db, payload.category)
-        post_result = repo.add_knowledge(db, title=payload.title, content=payload.content, category_id=category.id)
-    return get_knowledge(db, post_result.id)
+    try:
+        with transaction(db):
+            category = repo.get_or_create_category(db, payload.category)
+            item = repo.add_knowledge(
+                db,
+                title=payload.title,
+                content=payload.content,
+                category_id=category.id,
+            )
+            item.category = category
+            db.flush()
+            item_id = item.id
+        return get_knowledge(db, item_id)
+    except IntegrityError as exc:
+        _raise_conflict(exc)
 
 
 def update_knowledge(db: Session, knowledge_id: int, payload: KnowledgeWrite):
@@ -55,5 +65,5 @@ def delete_knowledge(db: Session, knowledge_id: int):
         target = repo.get_knowledge(db, knowledge_id)
         if target is None:
             raise KnowledgeNotFoundError(knowledge_id)
-        db.delete(target)
+        repo.delete_knowledge(db, target)
     return target
