@@ -31,7 +31,7 @@ UPDATE public.knowledge SET content='취소할 임시 안내입니다.' WHERE id
 -- BEGIN TASK A07_01
 -- TODO A07_01
 -- 임시 본문 수정을 확정하지 않고 취소하는 명령을 넣으세요. 다음 SELECT에서 시작 본문이 보여야 합니다.
-__TODO_END_CANCEL__;
+ROLLBACK;
 -- END TASK A07_01
 
 -- @step E7_CANCEL_READ expect=00000 capture=- reconnect=false
@@ -47,7 +47,7 @@ UPDATE public.knowledge SET content='실행 전에 가상환경을 확인합니�
 -- BEGIN TASK A07_02
 -- TODO A07_02
 -- 가상환경 확인 안내를 확정하세요. 이 명령 후 새 연결에서 조회해도 같은 본문이 나와야 합니다.
-__TODO_END_SAVE__;
+COMMIT;
 -- END TASK A07_02
 
 -- @step E7_RECONNECT expect=00000 capture=- reconnect=true
@@ -62,7 +62,7 @@ BEGIN;
 -- TODO A07_03
 -- 같은 트랜잭션에서 id 3의 content를 묶음 연습 2로 바꾸는 두 번째 UPDATE를 작성하세요. 두 변경 모두 ROLLBACK합니다.
 UPDATE public.knowledge SET content='묶음 연습 1' WHERE id=1;
-__TODO_SECOND_UPDATE__
+UPDATE public.knowledge SET content='묶음 연습 2' WHERE id=3
 RETURNING id, content;
 -- END TASK A07_03
 
