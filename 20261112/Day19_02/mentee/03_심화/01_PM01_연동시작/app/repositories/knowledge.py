@@ -4,7 +4,11 @@ from app.models import Category, Knowledge
 
 def list_knowledge(db: Session, category: str | None = None) -> list[Knowledge]:
     # TODO H05: 목록 Query와 선택 category 필터를 Repository에 구현하세요.
-    raise NotImplementedError("TODO H05")
+    stmt = select(Knowledge).options(joinedload(Knowledge.category)).order_by(Knowledge.id)
+    if category is not None:
+        stmt = stmt.join(Knowledge.category).where(Category.name == category)
+
+    return list(db.scalars(stmt).unique().all())
 
 def get_knowledge(db: Session, knowledge_id: int) -> Knowledge | None:
     return db.scalar(select(Knowledge).options(joinedload(Knowledge.category)).where(Knowledge.id == knowledge_id))

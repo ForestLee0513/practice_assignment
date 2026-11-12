@@ -18,9 +18,11 @@ def read_knowledge(knowledge_id: int, db: Session = Depends(get_db)):
     return to_read(service.get_knowledge(db, knowledge_id))
 
 @router.post("", response_model=KnowledgeRead, status_code=status.HTTP_201_CREATED)
+# @router.post("", status_code=status.HTTP_201_CREATED)
 def create_knowledge(payload: KnowledgeWrite, db: Session = Depends(get_db)):
     # TODO H12: Router가 Service 결과를 응답 모델로 변환하게 하세요.
-    raise NotImplementedError("TODO H12")
+    result = service.create_knowledge(db, payload)
+    return to_read(result)
 
 @router.put("/{knowledge_id}", response_model=KnowledgeRead)
 def update_knowledge(knowledge_id: int, payload: KnowledgeWrite, db: Session = Depends(get_db)):

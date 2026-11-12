@@ -14,7 +14,14 @@ class Settings(BaseSettings):
     def database_url(self) -> URL:
         # 비밀번호를 URL 문자열로 직접 이어 붙이지 않고 URL.create가 인코딩을 맡습니다.
         # TODO H01: URL.create로 Driver·User·Password·Host·Port·DB를 조립하세요.
-        raise NotImplementedError("TODO H01")
+        return URL.create(
+            "postgresql+psycopg",
+            username=self.db_user,
+            password=self.db_password,
+            host=self.db_host,
+            port=self.db_port,
+            database=self.db_name,
+        )
 
 @lru_cache
 def get_settings() -> Settings:

@@ -28,13 +28,32 @@ def get_knowledge(db: Session, knowledge_id: int):
     return item
 
 def create_knowledge(db: Session, payload: KnowledgeWrite):
+    with transaction(db):
     # TODO H09: 분류·지식 추가를 같은 Transaction 경계에서 commit하고 재조회하세요.
-    raise NotImplementedError("TODO H09")
+        category = repo.get_or_create_category(db, payload.category)
+        post_result = repo.add_knowledge(db, title=payload.title, content=payload.content, category_id=category.id)
+    return get_knowledge(db, post_result.id)
+
 
 def update_knowledge(db: Session, knowledge_id: int, payload: KnowledgeWrite):
     # TODO H10: 존재 확인→분류 연결→세 필드 교체→commit 순서로 수정하세요.
-    raise NotImplementedError("TODO H10")
+    with transaction(db):
+        target = repo.get_knowledge(db, knowledge_id)
+        if target is None:
+            raise KnowledgeNotFoundError(knowledge_id)
+        category = repo.get_or_create_category(db, payload.category)
+        target.title = payload.title
+        target.content = payload.content
+        target.category = category
+    return target
+        
 
 def delete_knowledge(db: Session, knowledge_id: int):
     # TODO H11: 존재 확인 뒤 삭제하고 같은 Service 경계에서 commit하세요.
-    raise NotImplementedError("TODO H11")
+     # TODO H10: 존재 확인→분류 연결→세 필드 교체→commit 순서로 수정하세요.
+    with transaction(db):
+        target = repo.get_knowledge(db, knowledge_id)
+        if target is None:
+            raise KnowledgeNotFoundError(knowledge_id)
+        db.delete(target)
+    return target

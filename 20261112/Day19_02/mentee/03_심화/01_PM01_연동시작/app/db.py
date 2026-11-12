@@ -9,16 +9,21 @@ from app.settings import get_settings
 @lru_cache
 def get_engine() -> Engine:
     # TODO H02: 설정 검증과 pool_pre_ping을 포함한 Engine Factory를 완성하세요.
-    raise NotImplementedError("TODO H02")
+    settings = get_settings()
+    if settings.db_password == 'CHANGE_ME':
+        raise RuntimeError(".env의 DB_PASSWORD를 실제 학습용 비밀번호로 변경해 주세요.")
+    return create_engine(settings.database_url, pool_pre_ping=True)
 
 @lru_cache
 def get_session_factory():
     # TODO H03: Engine에 바인딩된 sessionmaker를 반환하세요.
-    raise NotImplementedError("TODO H03")
+    return sessionmaker(bind=get_engine(), autoflush=False, expire_on_commit=False)
 
 def get_db() -> Generator[Session, None, None]:
     # TODO H04: 요청 단위 Session Dependency를 완성하세요.
-    raise NotImplementedError("TODO H04")
+    factory = get_session_factory()
+    with factory() as session:
+        yield session
 
 
 @contextmanager
