@@ -35,7 +35,7 @@ INSERT INTO public.knowledge(title,content,category_id) VALUES ('오류 확인',
 -- BEGIN TASK A06_01
 -- TODO A06_01
 -- 앞의 빈 본문 INSERT가 CHECK 오류로 거부된 뒤 이 구간만 따로 실행해 미확정 거래를 취소하세요.
-__TODO_ROLLBACK__;
+ROLLBACK;
 -- END TASK A06_01
 
 -- @step E6_FK_BEGIN expect=00000 capture=- reconnect=false
@@ -73,7 +73,7 @@ BEGIN;
 -- TODO A06_02
 -- S0에서 지식이 참조하는 learning 분류(id=1)만 삭제하려고 시도하세요. 기대는 RESTRICT의 FK 오류 23503입니다.
 DELETE FROM public.categories
-WHERE __TODO_REFERENCED_PARENT__;
+WHERE id = 1;
 -- END TASK A06_02
 
 -- @step E6_PARENT_CANCEL expect=00000 capture=- reconnect=false
