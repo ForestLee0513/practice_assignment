@@ -8,9 +8,20 @@ from app.schemas import KnowledgeWrite
 def _constraint_name(exc: IntegrityError) -> str | None:
     return getattr(getattr(exc.orig, "diag", None), "constraint_name", None)
 
+# 강사 해설: Service가 Transaction 종료 지점을 소유해 여러 DB 작업의 성공/실패를 한곳에서 결정합니다.
 def _raise_conflict(exc: IntegrityError) -> None:
-    # TODO H13: rollback은 transaction이 수행했습니다. constraint_name을 안전한 DataConflictError로 매핑하세요.
-    raise NotImplementedError("TODO H13")
+    # IntegrityError에서 위반한 DB 제약조건 이름을 추출합니다.
+    name = _constraint_name(exc)
+    safe = {
+        "categories_name_key": "Category conflict",
+        "categories_name_length": "Category rule conflict",
+        "knowledge_title_length": "Title rule conflict",
+        "knowledge_content_length": "Content rule conflict",
+        "knowledge_category_fk": "Category reference conflict",
+    }.get(name, "Database constraint conflict")
+    # 등록된 제약조건이면 해당 메시지를, 없으면 기본 메시지를 사용합니다.
+    # DataConflictError를 발생시키고 원래 IntegrityError를 원인 예외로 연결합니다.
+    raise DataConflictError(safe) from exc
 
 def list_knowledge(db: Session, category: str | None = None):
     return repo.list_knowledge(db, category)

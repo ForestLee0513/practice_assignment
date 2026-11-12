@@ -5,6 +5,7 @@ from app.db import get_engine
 from app.errors import DataConflictError, KnowledgeNotFoundError
 from app.routers.knowledge import router
 
+# 강사 해설: Day17의 URL·Method·입력·응답 계약을 유지하고 저장소만 PostgreSQL로 교체합니다.
 app = FastAPI(title="Knowledge API · PostgreSQL · Advanced")
 app.include_router(router)
 
@@ -16,13 +17,16 @@ async def not_found_handler(_, exc: KnowledgeNotFoundError):
 @app.exception_handler(DataConflictError)
 async def conflict_handler(_, exc: DataConflictError):
     from fastapi.responses import JSONResponse
-    # TODO H14: DataConflictError를 내부 SQL 노출 없이 409 JSON으로 변환하세요.
-    raise NotImplementedError("TODO H14")
+    # Service에서 전달된 DataConflictError를 JSON 본문의 HTTP 409 응답으로 변환합니다.
+    return JSONResponse(status_code=409, content={"detail":exc.message})
 
 @app.get("/health")
 def health():
     try:
-        # TODO H15: 별도 Connection으로 SELECT 1을 실행하고 정상 상태를 반환하세요.
-        raise NotImplementedError("TODO H15")
+        # DB 연결 및 SELECT 1 실행이 성공하면 정상 상태를 반환합니다.
+        with get_engine().connect() as conn: conn.execute(text("SELECT 1"))
+        return {"status":"ok", "database":"reachable"}
     except OperationalError as exc:
+        # DB 연결 실패 등의 OperationalError만 HTTP 503으로 변환합니다.
+        # 원래 예외를 원인으로 연결하며, 다른 종류의 예외는 여기서 처리하지 않습니다.
         raise HTTPException(503, "Database unavailable") from exc
