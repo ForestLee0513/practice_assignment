@@ -13,25 +13,39 @@ def get_knowledge(knowledge_id: int):
     entry = repo.find_entry(knowledge_id)
     # BEGIN H-API-07
     # TODO H-API-07: entry가 None이면 404를 raise하고, 있으면 entry를 반환하세요.
-    raise NotImplementedError("H-API-07: 주석 요구사항을 완성하세요.")
+    if entry is None:
+        raise HTTPException(status_code=404, detail="Knowledge not found")
+    return entry
     # END H-API-07
 @router.post("", status_code=201, response_model=Knowledge)
 def create_knowledge(payload: KnowledgeWrite):
     # BEGIN H-API-08
     # TODO H-API-08: payload.model_dump()를 repo.create에 전달하고 결과를 반환하세요. 201 선언과 파일
     # 저장은 별개입니다.
-    raise NotImplementedError("H-API-08: 주석 요구사항을 완성하세요.")
+    entry = repo.create(payload.model_dump())
+
+    return entry
     # END H-API-08
 @router.put("/{knowledge_id}", response_model=Knowledge)
 def update_knowledge(knowledge_id: int, payload: KnowledgeWrite):
     # BEGIN H-API-09
     # TODO H-API-09: repo.update에 ID와 입력 dict를 전달하세요. 결과가 None이면 404, 있으면 변경 결과를
     # 반환하세요.
-    raise NotImplementedError("H-API-09: 주석 요구사항을 완성하세요.")
+    entry = repo.update(knowledge_id=knowledge_id, fields=payload.model_dump())
+
+    if entry is None:
+        raise HTTPException(status_code=404, detail="Knowledge not found")
+
+    return entry
     # END H-API-09
 @router.delete("/{knowledge_id}", status_code=204)
 def delete_knowledge(knowledge_id: int):
     # BEGIN H-API-10
     # TODO H-API-10: repo.delete가 False이면 404를 raise하고, True이면 본문이 없는 204를 반환하세요.
-    raise NotImplementedError("H-API-10: 주석 요구사항을 완성하세요.")
+    result = repo.delete(knowledge_id=knowledge_id)
+
+    if result is False:
+        raise HTTPException(status_code=404, detail="Knowledge not found")
+
+    return Response(status_code=204)
     # END H-API-10
