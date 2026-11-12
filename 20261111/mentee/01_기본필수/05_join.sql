@@ -24,7 +24,7 @@ SET search_path TO public;
 -- 분류 PK와 지식 FK를 맞춰 분류명을 붙이세요. 결과 한 행은 지식 한 건이며 S0는 3행입니다.
 SELECT k.id, k.title, c.name AS category
 FROM public.knowledge AS k
-JOIN public.categories AS c ON __TODO_JOIN_CONDITION__
+JOIN public.categories AS c ON k.id = c.id
 ORDER BY k.id;
 -- END TASK B05_01
 
@@ -33,10 +33,10 @@ ORDER BY k.id;
 -- TODO B05_02
 -- 분류를 왼쪽에 두고 분류별 실제 지식 수를 세세요. 빈 reference 분류는 0이어야 합니다.
 -- 힌트: NULL인 자식 ID를 세지 않는 COUNT를 사용합니다.
-SELECT c.name AS category, __TODO_CHILD_COUNT__ AS knowledge_count
+SELECT c.name AS category, COUNT(k.id) AS knowledge_count
 FROM public.categories AS c
 LEFT JOIN public.knowledge AS k ON k.category_id = c.id
-__TODO_GROUP_BY__ c.id, c.name
+GROUP BY c.id, c.name
 ORDER BY c.id;
 -- END TASK B05_02
 
