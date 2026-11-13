@@ -29,15 +29,14 @@ def main():
     issues = []
     for case in CASES:
         if "sources" not in case:
-            kind = ""  # TODO: 필수 필드 자체가 없으면 "format"
+            kind = "format"  # TODO: 필수 필드 자체가 없으면 "format"
         elif not case["sources"]:
-            kind = ""  # TODO: 출처 목록이 비어 있으면 "evidence"
+            kind = "evidence"  # TODO: 출처 목록이 비어 있으면 "evidence"
         elif case["answer"] != case["source"]:
-            kind = ""  # TODO: 제공 원본과 내용이 다르면 "factual_mismatch"
+            kind = "factual_mismatch"  # TODO: 제공 원본과 내용이 다르면 "factual_mismatch"
         else:
             kind = "ok"
         issues.append({"id": case["id"], "kind": kind})
-    raise NotImplementedError("D20-07-B01: TODO를 완성하세요")
     # END D20-07-B01
 
     # TODO D20-07-B02: 사실성·형식·근거 검증을 서로 다른 검사라고 설명하세요.
@@ -46,11 +45,10 @@ def main():
     # 주의: 사전 설계된 규칙 기반 점검이며 실제 생성형 AI의 진위 판정기가 아닙니다.
     # BEGIN D20-07-B02
     explanations = {
-        "format": "",           # TODO: JSON에 필수 필드가 있는지
-        "evidence": "",         # TODO: 출처의 존재·적절성
-        "factual_mismatch": "", # TODO: 확인된 원본과 주장의 불일치
+        "format": "JSON/응답에 필수 필드가 존재하는지 보는 구조 검증",           # TODO: JSON에 필수 필드가 있는지
+        "evidence": "인용·출처 정보가 있는지와 적절한 근거인지 구분",         # TODO: 출처의 존재·적절성
+        "factual_mismatch": "주장과 승인된 정답/원본이 모순되는지 사람·검증 규칙으로 확인", # TODO: 확인된 원본과 주장의 불일치
     }
-    raise NotImplementedError("D20-07-B02: TODO를 완성하세요")
     # END D20-07-B02
     mitigation={}
     additional_checks=[]
@@ -76,7 +74,7 @@ def main():
     lines += []  # TODO: issues를 순회하여 F01~F03의 kind를 한 줄씩 기록
     lines += ["", "## 플랫폼 연결", ""]  # TODO: FastAPI·DB·RAG·Agent의 역할 기록
     write_md(HERE / "outputs" / "review.md", "\n".join(lines) + "\n")
-    raise NotImplementedError("D20-07-B03: TODO를 완성하세요")
+    print("[07]",[(r["id"],r["kind"]) for r in issues])
     # END D20-07-B03
 
 if __name__=="__main__":
