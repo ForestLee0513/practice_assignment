@@ -25,8 +25,17 @@ def schema_sql():
         DROP/TRUNCATE를 사용하지 않습니다.
     """
     # TODO D23-05-B01: 위 입력·출력 계약에 맞게 직접 구현합니다.
-    raise NotImplementedError("D23-05-B01: 직접 구현하세요")
-    return "CREATE TABLE IF NOT EXISTS day23_search_docs ( ... );"
+    return """
+        CREATE TABLE IF NOT EXISTS day23_search_docs (
+            id integer PRIMARY KEY,
+            title text NOT NULL,
+            content text NOT NULL,
+            category text NOT NULL,
+            source_version text NOT NULL,
+            embedding_model text NOT NULL,
+            embedding vector(384) NOT NULL
+        );
+    """
 # END D23-05-B01
 
 # BEGIN D23-05-B02
@@ -37,8 +46,7 @@ def prepare_document_rows(rows):
         반환: [{'id', 'passage_input', ...}, ...]. 같은 ID를 새로 만들지 않습니다.
     """
     # TODO D23-05-B02: 위 입력·출력 계약에 맞게 직접 구현합니다.
-    raise NotImplementedError("D23-05-B02: 직접 구현하세요")
-    return [{'id': r[''], 'passage_input': passage_text()} for r in rows]
+    return [{**dict(r), 'passage_input': passage_text(r)} for r in rows]
 # END D23-05-B02
 
 # BEGIN D23-05-B03
@@ -50,8 +58,7 @@ def topk_sql():
         E5 외 다른 공간 혼합을 막도록 embedding_model을 필터합니다.
     """
     # TODO D23-05-B03: 위 입력·출력 계약에 맞게 직접 구현합니다.
-    raise NotImplementedError("D23-05-B03: 직접 구현하세요")
-    return "SELECT id, title, content, ... FROM day23_search_docs WHERE ... ORDER BY embedding <=> %s ASC LIMIT %s"
+    return "SELECT id, title, content, category, source_version, embedding_model, distance FROM day23_search_docs WHERE embedding_model=%s ORDER BY embedding <=> %s ASC LIMIT %s"
 # END D23-05-B03
 
 
