@@ -25,8 +25,12 @@ def validate_question(question):
         API가 연결되어 있지 않아도 검사 가능한 순수 함수입니다.
     """
     # TODO D23-08-B01: 위 입력·출력 계약에 맞게 직접 구현합니다.
-    raise NotImplementedError("D23-08-B01: 직접 구현하세요")
-    return question.strip()
+    result = question.strip()
+
+    if not result: # falsy value는 모두 예외처리
+        raise ValueError("빈 값/공백만 있는 값인지 확인해 주세요.")
+
+    return result
 # END D23-08-B01
 
 # BEGIN D23-08-B02
@@ -37,10 +41,15 @@ def retrieve_candidates(question,mode,k,category,env_file):
         실제 live는 exercise05에서 9개 자료를 먼저 저장해야 합니다.
         DB 연결 실패를 빈 결과 []로 바꾸지 말고 예외를 전달하세요.
     """
-    # TODO D23-08-B02: 위 입력·출력 계약에 맞게 직접 구현합니다.
-    raise NotImplementedError("D23-08-B02: 직접 구현하세요")
     if mode == 'fixture':
-        return fixture_search()
+        return fixture_search(question, k=k, category=category)
+
+    encoder = get_encoder('live')
+    qvec = encode_question(encoder, question)
+    with connect_db(env_file) as conn:
+        check_data_ready(conn)
+        return exact_topk(conn, qvec, k=k, category=category)
+
 # END D23-08-B02
 
 # BEGIN D23-08-B03
@@ -51,9 +60,8 @@ def format_candidates(hits):
         검색된 원문을 요약·변조하지 않고, distance는 숫자 그대로 둡니다.
         답변 상태(answered)를 자동으로 부여하지 마세요.
     """
-    # TODO D23-08-B03: 위 입력·출력 계약에 맞게 직접 구현합니다.
-    raise NotImplementedError("D23-08-B03: 직접 구현하세요")
-    return [{'id': h[''], 'title': h[''], 'content': h['']} for h in hits]
+    fields = ('id', 'title', 'content', 'category', 'source_version', 'distance')
+    return [{field: hit[field] for field in fields} for hit in hits]
 # END D23-08-B03
 
 
