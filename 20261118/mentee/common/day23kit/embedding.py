@@ -10,7 +10,7 @@ def get_encoder(mode='fixture'):
     import torch
     torch.set_num_threads(1)
     from sentence_transformers import SentenceTransformer
-    return SentenceTransformer(E5_MODEL_ID,device='cpu')
+    return SentenceTransformer(E5_MODEL_ID,device='cuda')
 
 def get_model_revision(encoder):
     if isinstance(encoder,SimulatedEncoder):return 'simulated_not_e5'
