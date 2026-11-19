@@ -72,7 +72,7 @@
   - 예시: 100자 기준 Chunk size = 40 중 10 ~ 20% 내외를 Overlap으로 지정
 - Overlap 적용 시 +- 단위로 padding 적용할 것
 - Overlap의 수와 중복량 / 필요 조건의 연결을 함께 비교
-- yield를 통해 Generator(aka Iterator)롤 변환해 함수 종료에 조건을 붙여 Character Chunker 생성
+- yield를 통해 Generator(aka Iterator)를 변환해 함수 종료에 조건을 붙여 Character Chunker 생성
   - 재귀함수 + 조건으로 이해하면 편할 듯 함.
   - 해당 개념에 대해서 추가적으로 비동기, 코루틴을 알고 있으면 이해하기 편할 듯 함.
 - Chunk 이후 E5 적용 시 Chunking Window, Structured-aware Chunking 기준으로 모델 가동
