@@ -13,47 +13,72 @@ def validate_manifest(rows:list[dict])->list[dict]:
     # 요구: 입력 변수·반환값의 자료형을 유지하고, 완료 기준은 README/expected를 참조하세요.
     # 힌트: 이 함수의 docstring과 상위 실행 함수에 전달되는 값을 확인합니다.
     # TODO를 완성한 뒤 아래 NotImplementedError 줄을 삭제합니다.
-    raise NotImplementedError("D24-01-A01 TODO 미완성")
+    ids=set()
+    out=[]
+    for row in rows:
+        for key in ('doc_id','file','category','source_version'):
+            if not isinstance(row.get(key),str) or not row[key].strip():
+                raise ValueError('missing '+key)
+        if row['doc_id'] in ids:
+            raise ValueError('duplicate doc_id')
+        ids.add(row['doc_id'])
+        if Path(row['file']).name != row['file'] or Path(row['file']).is_absolute():
+            raise ValueError('untrusted filename')
+        out.append(row)
+    return sorted(out, key=lambda row:row['doc_id'])
     # END D24-01-A01
 def collect_one(row:dict)->dict:
     # BEGIN D24-01-A02
     # TODO D24-01-A02 : 원문을 수집하여 bytes 길이·raw_sha256 또는 명시적 오류를 기록합니다.
     # 요구: 입력 변수·반환값의 자료형을 유지하고, 완료 기준은 README/expected를 참조하세요.
     # 힌트: 이 함수의 docstring과 상위 실행 함수에 전달되는 값을 확인합니다.
-    # TODO를 완성한 뒤 아래 NotImplementedError 줄을 삭제합니다.
-    raise NotImplementedError("D24-01-A02 TODO 미완성")
+    path=raw_path(row)
+    info={'doc_id':row['doc_id'],'source_version':row['source_version'],'file':row['file']}
+    if path.suffix.lower() not in {'.txt','.md','.html','.pdf'}:
+        return {**info,'status':'unsupported','reason':'extension'}
+    try:
+        raw = path.read_bytes()
+    except OSError as exc:
+        return {**info,'status':'read_error','reason':type(exc).__name__}
+    return {**info,'status':'collected','size_bytes':len(raw),'raw_sha256':sha_bytes(raw)}
     # END D24-01-A02
 def compare_version(record:dict,previous:dict|None)->str:
     # BEGIN D24-01-A03
     # TODO D24-01-A03 : 이전 해시와 현재 해시로 new·unchanged·changed·unreadable을 구분합니다.
     # 요구: 입력 변수·반환값의 자료형을 유지하고, 완료 기준은 README/expected를 참조하세요.
     # 힌트: 이 함수의 docstring과 상위 실행 함수에 전달되는 값을 확인합니다.
-    # TODO를 완성한 뒤 아래 NotImplementedError 줄을 삭제합니다.
-    raise NotImplementedError("D24-01-A03 TODO 미완성")
+    if record['status'] != 'collected':
+        return 'unreadable'
+    if previous is None:
+        return 'new'
+    return 'unchanged' if previous.get('raw_sha256')==record['raw_sha256'] else 'changed'
     # END D24-01-A03
 def failure_audit(records:list[dict])->list[dict]:
     # BEGIN D24-01-A04
     # TODO D24-01-A04 : 지원하지 않는 형식과 파일 접근 실패를 감사 목록에 기록합니다.
     # 요구: 입력 변수·반환값의 자료형을 유지하고, 완료 기준은 README/expected를 참조하세요.
     # 힌트: 이 함수의 docstring과 상위 실행 함수에 전달되는 값을 확인합니다.
-    # TODO를 완성한 뒤 아래 NotImplementedError 줄을 삭제합니다.
-    raise NotImplementedError("D24-01-A04 TODO 미완성")
+    return [{'doc_id':r['doc_id'],'status':r['status'],'reason':r.get('reason')}
+            for r in records if r['status']!='collected']
     # END D24-01-A04
 def reconcile(records:list[dict])->dict:
     # BEGIN D24-01-A05
     # TODO D24-01-A05 : 입력 건수 = 수집·미지원·읽기 오류 건수인지 검사합니다.
     # 요구: 입력 변수·반환값의 자료형을 유지하고, 완료 기준은 README/expected를 참조하세요.
     # 힌트: 이 함수의 docstring과 상위 실행 함수에 전달되는 값을 확인합니다.
-    # TODO를 완성한 뒤 아래 NotImplementedError 줄을 삭제합니다.
-    raise NotImplementedError("D24-01-A05 TODO 미완성")
+    by={s:sum(r['status']==s for r in records)
+        for s in ('collected','unsupported','read_error')}
+    if len(records) != sum(by.values()):
+        raise ValueError('lost or unknown status')
+    return {'input_count':len(records),'by_status':by,'failures':failure_audit(records)}
     # END D24-01-A05
 def fingerprint(records:list[dict])->str:
     # BEGIN D24-01-A06
     # TODO D24-01-A06 : 같은 파일·같은 순서 재실행 시 안정적인 manifest fingerprint를 계산합니다.
     # 요구: 입력 변수·반환값의 자료형을 유지하고, 완료 기준은 README/expected를 참조하세요.
     # 힌트: 이 함수의 docstring과 상위 실행 함수에 전달되는 값을 확인합니다.
-    # TODO를 완성한 뒤 아래 NotImplementedError 줄을 삭제합니다.
-    raise NotImplementedError("D24-01-A06 TODO 미완성")
+    canonical=json.dumps(records,ensure_ascii=False,sort_keys=True,separators=(',',':'))
+    return hashlib.sha256(canonical.encode('utf-8')).hexdigest()
     # END D24-01-A06
 def main():
     rows=validate_manifest(load_json(DATA/'manifest.json'))
