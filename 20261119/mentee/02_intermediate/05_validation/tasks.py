@@ -13,7 +13,9 @@ def validate_ranges(length:int,spans:list[tuple[int,int]])->None:
     # 요구: 입력 변수·반환값의 자료형을 유지하고, 완료 기준은 README/expected를 참조하세요.
     # 힌트: 이 함수의 docstring과 상위 실행 함수에 전달되는 값을 확인합니다.
     # TODO를 완성한 뒤 아래 NotImplementedError 줄을 삭제합니다.
-    raise NotImplementedError("D24-05-I01 TODO 미완성")
+    for a, b in spans:
+        if not 0 <= a < b <= length:
+            raise ValueError("invalid range")
     # END D24-05-I01
 def coverage(length:int,spans:list[tuple[int,int]])->float|None:
     # BEGIN D24-05-I02
@@ -21,7 +23,11 @@ def coverage(length:int,spans:list[tuple[int,int]])->float|None:
     # 요구: 입력 변수·반환값의 자료형을 유지하고, 완료 기준은 README/expected를 참조하세요.
     # 힌트: 이 함수의 docstring과 상위 실행 함수에 전달되는 값을 확인합니다.
     # TODO를 완성한 뒤 아래 NotImplementedError 줄을 삭제합니다.
-    raise NotImplementedError("D24-05-I02 TODO 미완성")
+    if length == 0:
+        return None
+    validate_ranges(length, spans)
+    n, _ = covered_positions(spans, length)
+    return n / length
     # END D24-05-I02
 def detect_gaps_and_duplicates(length:int,spans:list[tuple[int,int]],ids:list[str])->dict:
     # BEGIN D24-05-I03
@@ -29,7 +35,17 @@ def detect_gaps_and_duplicates(length:int,spans:list[tuple[int,int]],ids:list[st
     # 요구: 입력 변수·반환값의 자료형을 유지하고, 완료 기준은 README/expected를 참조하세요.
     # 힌트: 이 함수의 docstring과 상위 실행 함수에 전달되는 값을 확인합니다.
     # TODO를 완성한 뒤 아래 NotImplementedError 줄을 삭제합니다.
-    raise NotImplementedError("D24-05-I03 TODO 미완성")
+    _,missing=covered_positions(spans,length)
+    gaps=[]
+    for pos in missing:
+        if gaps and gaps[-1][1]==pos:gaps[-1]=(gaps[-1][0],pos+1)
+        else:gaps.append((pos,pos+1))
+    seen=set();dups=[]
+    for cid in ids:
+        if cid in seen:dups.append(cid)
+        seen.add(cid)
+    return {'gaps':gaps,'duplicate_ids':sorted(set(dups))}
+
     # END D24-05-I03
 def make_report(length:int,spans:list[tuple[int,int]],ids:list[str])->dict:
     # BEGIN D24-05-I04
@@ -37,7 +53,16 @@ def make_report(length:int,spans:list[tuple[int,int]],ids:list[str])->dict:
     # 요구: 입력 변수·반환값의 자료형을 유지하고, 완료 기준은 README/expected를 참조하세요.
     # 힌트: 이 함수의 docstring과 상위 실행 함수에 전달되는 값을 확인합니다.
     # TODO를 완성한 뒤 아래 NotImplementedError 줄을 삭제합니다.
-    raise NotImplementedError("D24-05-I04 TODO 미완성")
+    validate_ranges(length,spans)
+    covered, _ = covered_positions(spans,length)
+    errors = detect_gaps_and_duplicates(length,spans,ids)
+    return {
+        'coverage': coverage(length,spans),
+        'covered_characters': covered,
+        'repeat_extra_chars': sum(b-a for a,b in spans)-covered,
+        'errors': errors,
+        'valid': not errors['gaps'] and not errors['duplicate_ids']
+    }
     # END D24-05-I04
 def main():
     samples={'overlap':([(0,8),(6,14),(12,20)],['A','B','C']),
