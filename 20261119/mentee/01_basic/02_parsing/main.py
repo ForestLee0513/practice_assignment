@@ -13,9 +13,8 @@ def decode_text(raw:bytes)->str:
     # 요구: 입력 변수·반환값의 자료형을 유지하고, 완료 기준은 README/expected를 참조하세요.
     # 힌트: 이 함수의 docstring과 상위 실행 함수에 전달되는 값을 확인합니다.
     # TODO를 완성한 뒤 아래 NotImplementedError 줄을 삭제합니다.
-    raise NotImplementedError("D24-02-B01 TODO 미완성")
     # any를 UTF-8 디코딩에 사용할 Encoding 이름으로 교체하세요.
-    return raw.decode(any)
+    return raw.decode(encoding='utf-8-sig')
     # END D24-02-B01
 def make_unit(doc_id:str,source_version:str,text:str)->dict:
     """TXT에는 페이지 번호가 없으므로 None. 가짜 page 1을 만들지 않습니다."""
@@ -24,11 +23,10 @@ def make_unit(doc_id:str,source_version:str,text:str)->dict:
     # 요구: 입력 변수·반환값의 자료형을 유지하고, 완료 기준은 README/expected를 참조하세요.
     # 힌트: 이 함수의 docstring과 상위 실행 함수에 전달되는 값을 확인합니다.
     # TODO를 완성한 뒤 아래 NotImplementedError 줄을 삭제합니다.
-    raise NotImplementedError("D24-02-B02 TODO 미완성")
     # any는 수강생이 직접 채울 자리 표시자입니다.
-    return {'doc_id':any,'source_version':any,
+    return {'doc_id':doc_id,'source_version':source_version,
             'unit_id':'text-1','source_locator':'assignment.txt',
-            'page_number':None,'raw_text':any}
+            'page_number':None,'raw_text':text}
     # END D24-02-B02
 def main():
     raw=(DATA/'raw'/'assignment.txt').read_bytes()
