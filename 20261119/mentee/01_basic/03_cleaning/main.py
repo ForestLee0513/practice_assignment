@@ -12,9 +12,8 @@ def unify_newlines(text:str)->str:
     # 요구: 입력 변수·반환값의 자료형을 유지하고, 완료 기준은 README/expected를 참조하세요.
     # 힌트: 이 함수의 docstring과 상위 실행 함수에 전달되는 값을 확인합니다.
     # TODO를 완성한 뒤 아래 NotImplementedError 줄을 삭제합니다.
-    raise NotImplementedError("D24-03-B01 TODO 미완성")
     # CRLF와 CR을 차례로 LF로 바꾸도록 any 두 곳을 채우세요.
-    return text.replace(any,'\n').replace(any,'\n')
+    return text.replace('\r\n','\n').replace('\r','\n')
     # END D24-03-B01
 def reduce_horizontal_spaces(text:str)->str:
     """줄 단위 변환이므로 빈 줄이 사라지지 않습니다."""
@@ -23,10 +22,9 @@ def reduce_horizontal_spaces(text:str)->str:
     # 요구: 입력 변수·반환값의 자료형을 유지하고, 완료 기준은 README/expected를 참조하세요.
     # 힌트: 이 함수의 docstring과 상위 실행 함수에 전달되는 값을 확인합니다.
     # TODO를 완성한 뒤 아래 NotImplementedError 줄을 삭제합니다.
-    raise NotImplementedError("D24-03-B02 TODO 미완성")
     # 줄 단위로 처리할 목록을 any 대신 작성하세요. 빈 줄은 보존해야 합니다.
     return '\n'.join(re.sub(r'[ \t]+',' ',line).strip()
-                     for line in any).strip()
+                     for line in text.split('\n')).strip()
     # END D24-03-B02
 def main():
     text='출석   안내\r\n\r\n10분  초과는 결석.\r\n단,  사전 승인 시 예외.'

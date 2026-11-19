@@ -13,7 +13,7 @@ def apply_nfc(text:str)->str:
     # 요구: 입력 변수·반환값의 자료형을 유지하고, 완료 기준은 README/expected를 참조하세요.
     # 힌트: 이 함수의 docstring과 상위 실행 함수에 전달되는 값을 확인합니다.
     # TODO를 완성한 뒤 아래 NotImplementedError 줄을 삭제합니다.
-    raise NotImplementedError("D24-03-I01 TODO 미완성")
+    return unicodedata.normalize("NFC", text)
     # END D24-03-I01
 def normalize_prose(text:str)->str:
     # BEGIN D24-03-I02
@@ -21,7 +21,9 @@ def normalize_prose(text:str)->str:
     # 요구: 입력 변수·반환값의 자료형을 유지하고, 완료 기준은 README/expected를 참조하세요.
     # 힌트: 이 함수의 docstring과 상위 실행 함수에 전달되는 값을 확인합니다.
     # TODO를 완성한 뒤 아래 NotImplementedError 줄을 삭제합니다.
-    raise NotImplementedError("D24-03-I02 TODO 미완성")
+    lf_text = apply_nfc(text.replace('\r\n', '\n').replace('\r', '\n'))
+    return '\n'.join(re.sub(r'[ \t]+',' ',line).strip()
+                     for line in lf_text.split('\n')).strip()
     # END D24-03-I02
 def check_phrases(text:str,phrases:list[str])->dict:
     # BEGIN D24-03-I03
@@ -29,7 +31,10 @@ def check_phrases(text:str,phrases:list[str])->dict:
     # 요구: 입력 변수·반환값의 자료형을 유지하고, 완료 기준은 README/expected를 참조하세요.
     # 힌트: 이 함수의 docstring과 상위 실행 함수에 전달되는 값을 확인합니다.
     # TODO를 완성한 뒤 아래 NotImplementedError 줄을 삭제합니다.
-    raise NotImplementedError("D24-03-I03 TODO 미완성")
+    return {
+        "present": [p for p in phrases if p in text],
+        "missing": [p for p in phrases if p not in text]
+    }
     # END D24-03-I03
 def make_audit(original:str,cleaned:str,phrases:list[str])->dict:
     # BEGIN D24-03-I04
@@ -37,7 +42,14 @@ def make_audit(original:str,cleaned:str,phrases:list[str])->dict:
     # 요구: 입력 변수·반환값의 자료형을 유지하고, 완료 기준은 README/expected를 참조하세요.
     # 힌트: 이 함수의 docstring과 상위 실행 함수에 전달되는 값을 확인합니다.
     # TODO를 완성한 뒤 아래 NotImplementedError 줄을 삭제합니다.
-    raise NotImplementedError("D24-03-I04 TODO 미완성")
+    return {
+        "cleaner_version": "nfc-prose-v1",
+        "chars_before": len(original),
+        "chars_after": len(cleaned),
+        "clean_hash": hashlib.sha256(cleaned.encode("utf-8")).hexdigest(),
+        "phrase_check": check_phrases(cleaned, phrases),
+        "idempotent": normalize_prose(cleaned)==cleaned
+    }
     # END D24-03-I04
 def main():
     doc=by_doc('DOC-ATTEND');unit=parse_one(doc)['units'][0]
