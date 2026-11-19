@@ -14,7 +14,8 @@ def split_one(doc:dict,unit:dict,size=70,overlap=10)->tuple[str,list[dict]]:
     # 요구: 입력 변수·반환값의 자료형을 유지하고, 완료 기준은 README/expected를 참조하세요.
     # 힌트: 이 함수의 docstring과 상위 실행 함수에 전달되는 값을 확인합니다.
     # TODO를 완성한 뒤 아래 NotImplementedError 줄을 삭제합니다.
-    raise NotImplementedError("D24-04-I01 TODO 미완성")
+    text = clean_prose(unit['raw_text'])
+    return text,list(char_windows(text, size, overlap))
     # END D24-04-I01
 def attach_chunks(doc:dict,unit:dict,text:str,spans:list[dict])->list[dict]:
     # BEGIN D24-04-I02
@@ -22,7 +23,7 @@ def attach_chunks(doc:dict,unit:dict,text:str,spans:list[dict])->list[dict]:
     # 요구: 입력 변수·반환값의 자료형을 유지하고, 완료 기준은 README/expected를 참조하세요.
     # 힌트: 이 함수의 docstring과 상위 실행 함수에 전달되는 값을 확인합니다.
     # TODO를 완성한 뒤 아래 NotImplementedError 줄을 삭제합니다.
-    raise NotImplementedError("D24-04-I02 TODO 미완성")
+    return [build_chunk(doc, unit, text, s) for s in spans]
     # END D24-04-I02
 def measure(chunks:list[dict],model=None)->list[dict]:
     # BEGIN D24-04-I03
@@ -30,15 +31,37 @@ def measure(chunks:list[dict],model=None)->list[dict]:
     # 요구: 입력 변수·반환값의 자료형을 유지하고, 완료 기준은 README/expected를 참조하세요.
     # 힌트: 이 함수의 docstring과 상위 실행 함수에 전달되는 값을 확인합니다.
     # TODO를 완성한 뒤 아래 NotImplementedError 줄을 삭제합니다.
-    raise NotImplementedError("D24-04-I03 TODO 미완성")
+    if model is None:
+        return [{**c,'token_count':None,'token_status':'not_run'} for c in chunks]
+    return [
+        {
+            **c,
+            'token_count': token_len(model,c['embedding_text']),
+            'token_status':'measured'
+        } for c in chunks
+    ]
     # END D24-04-I03
+
 def enforce_limit(chunks:list[dict],model=None)->dict:
     # BEGIN D24-04-I04
     # TODO D24-04-I04 : 최대 입력 길이를 초과한 청크를 통과시키지 않고 개수와 ID를 기록합니다.
     # 요구: 입력 변수·반환값의 자료형을 유지하고, 완료 기준은 README/expected를 참조하세요.
     # 힌트: 이 함수의 docstring과 상위 실행 함수에 전달되는 값을 확인합니다.
     # TODO를 완성한 뒤 아래 NotImplementedError 줄을 삭제합니다.
-    raise NotImplementedError("D24-04-I04 TODO 미완성")
+    if model is None:
+        return {
+            'status': 'not_run',
+            'too_long_ids': [],
+            'checked': 0
+        }
+    overs=[c['chunk_id'] for c in chunks if c['token_count'] is not None
+          and c['token_count']>model.max_seq_length]
+
+    return {
+        'status': 'failed' if overs else 'pass',
+        'too_long_ids': overs,
+        'checked': len(chunks)
+    }
     # END D24-04-I04
 def main():
     model=None
