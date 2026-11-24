@@ -19,7 +19,12 @@ def make_candidate_request(case):
     # BEGIN D27-04-B01
     # TODO D27-04-B01: candidate_k와 context_k는 다른 제한값입니다.
     # 반환값과 예외 조건은 README.md의 수행 기준을 따르세요.
-    raise NotImplementedError("D27-04-B01 미완성")
+    return {
+        'query': case['question'],
+        'category': case['category'],
+        'candidate_k': 5,
+        'context_k': 2
+    }
     # END D27-04-B01
 
 
@@ -28,7 +33,10 @@ def fetch_documents(retriever, payload):
     # BEGIN D27-04-B02
     # TODO D27-04-B02: Day26에서 배운 Runnable.invoke로 후보 Document를 받아옵니다.
     # 반환값과 예외 조건은 README.md의 수행 기준을 따르세요.
-    raise NotImplementedError("D27-04-B02 미완성")
+    docs = retriever.invoke(payload)
+    if len(docs) > payload['candidate_k']:
+        raise ValueError('candidate_k 초과')
+    return docs
     # END D27-04-B02
 
 
