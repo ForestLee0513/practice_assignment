@@ -38,8 +38,10 @@ def db_options():
 
 
 def require_cuda():
-    """GPU 기본 정책: 실패를 CPU로 숨기지 않습니다."""
+    """사용 가능한 CUDA 또는 MPS GPU를 반환하며 CPU로 대체하지 않습니다."""
     import torch
-    if not torch.cuda.is_available():
-        raise RuntimeError('CUDA GPU를 사용할 수 없습니다. Driver·PyTorch CUDA Build·가상환경을 확인하세요.')
-    return 'cuda:0'
+    if torch.cuda.is_available():
+        return 'cuda:0'
+    if torch.backends.mps.is_available():
+        return 'mps'
+    raise RuntimeError('CUDA 또는 MPS GPU를 사용할 수 없습니다. PyTorch 설치와 GPU 환경을 확인하세요.')
