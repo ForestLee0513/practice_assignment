@@ -21,7 +21,7 @@ def create_chat_model():
     from coursekit.config import load_env
     load_env()
     import os
-    return ChatOpenAI(model=require_setting('LLM_MODEL'),api_key=require_setting('OPENAI_API_KEY'),temperature=0)
+    return ChatOpenAI(model=require_setting('LLM_MODEL'),api_key=require_setting('OPENAI_API_KEY'))
 
 def create_generation(model=None):
     from langchain_core.prompts import ChatPromptTemplate
