@@ -19,13 +19,21 @@ def live_scorer(pairs,batch_size=4):
 
 
 def rerank_documents(query,documents,score_fn,*,top_n=2):
+    # top_n이 int가 아니거나 1 <= top_n <= 20 상태가 아닌 경우 예외 처리
     if type(top_n) is not int or not 1<=top_n<=20:raise ValueError('top_n: 1~20')
+    # query가 빈 값인 경우 예외 처리
     if not query.strip():raise ValueError('rerank query 비어 있음')
+    # document 마다 검증 (본문이 비었는지, 메타데이터에 필수 key가 담겼는지 등)
     for doc in documents:valid_document(doc)
+    # documents가 비어있을 경우 빈 배열로 반환
     if not documents:return []
+    # 쿼리와 문서 본문의 내용을 하나의 리스트로 묶어 처리 (예: [(쿼리, 문서 본문), (쿼리, 문서 본문), (쿼리, 문서 본문)])
     pairs=[(query,doc.page_content) for doc in documents]
+    # 점수 책정
     scores=list(score_fn(pairs))
+    # 점수 책정된 갯수와 문서의 갯수가 다를 때 예외 처리
     if len(scores)!=len(documents):raise ValueError('CrossEncoder 점수 개수 불일치')
+    # 점수가 책정이 불가능한 경우(nan, inf) 예외 처리
     if any(not math.isfinite(float(s)) for s in scores):raise ValueError('NaN/Inf CrossEncoder 점수')
     scored=[]
     for i,(doc,score) in enumerate(zip(documents,scores)):
