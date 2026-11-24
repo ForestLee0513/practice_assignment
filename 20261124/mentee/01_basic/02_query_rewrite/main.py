@@ -19,7 +19,8 @@ def apply_rewrite(question, history, offline):
     # BEGIN D27-02-B01
     # TODO D27-02-B01: offline이면 고정 예시, 기본 실행이면 실제 ChatPromptTemplate → Chat Model을 호출합니다.
     # 반환값과 예외 조건은 README.md의 수행 기준을 따르세요.
-    raise NotImplementedError("D27-02-B01 미완성")
+    from coursekit.rewrite import rewrite_query
+    return rewrite_query(question, history, offline=offline)
     # END D27-02-B01
 
 
@@ -28,7 +29,12 @@ def record_rewrite(original, result):
     # BEGIN D27-02-B02
     # TODO D27-02-B02: 원래 질문을 검색 질문으로 덮어쓰지 않습니다.
     # 반환값과 예외 조건은 README.md의 수행 기준을 따르세요.
-    raise NotImplementedError("D27-02-B02 미완성")
+    return {
+        'original_question': original, 
+        'search_query': result.search_query,
+        'status': result.status,
+        'reason': result.reason
+    }
     # END D27-02-B02
 
 
