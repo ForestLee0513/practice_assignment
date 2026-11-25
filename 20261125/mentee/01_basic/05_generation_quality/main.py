@@ -18,13 +18,25 @@ def claim_faithfulness(claims: list[dict]) -> float | None:
     """Claim 목록에서 근거가 지지하는 Claim 비율을 계산하세요. Claim이 없으면 None."""
     # TODO D28-05-B01: Claim 목록에서 근거가 지지하는 Claim 비율을 계산하세요. Claim이 없으면 None.
     # 힌트: 모든 Claim의 supported는 교육용 사람 레이블입니다.
-    raise NotImplementedError("D28-05-B01 TODO를 완성하세요")
+    # raise NotImplementedError("D28-05-B01 TODO를 완성하세요")
+    supported_claims = [claim for claim in claims if claim["supported"]]
+    ratio = len(supported_claims) / len(claims) if claims else None
+
+    return ratio
 
 def describe_claim_result(claims: list[dict]) -> str:
     """비지원 Claim을 이름과 함께 기록하세요. “모든 Claim 지원”과 “Claim 없음”은 구별합니다."""
     # TODO D28-05-B02: 비지원 Claim을 이름과 함께 기록하세요. “모든 Claim 지원”과 “Claim 없음”은 구별합니다.
     # 힌트: Faithfulness는 Reference Answer와의 비교가 아닙니다.
-    raise NotImplementedError("D28-05-B02 TODO를 완성하세요")
+    if len(claims) == 0:
+        return
+    
+    if False in [claim["supported"] for claim in claims]:
+        return "근거 불충분: " + ", ".join(
+            claim["text"] for claim in claims if not claim["supported"]
+        )
+
+    return "support_all_claims"
 
 
 def main():
