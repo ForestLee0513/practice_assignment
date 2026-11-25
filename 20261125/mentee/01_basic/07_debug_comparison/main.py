@@ -18,13 +18,25 @@ def score_delta(before: float | None, after: float | None) -> float | None:
     """같은 질문의 Before/After 점수 변화량을 계산하세요. No-answer(None)는 수치 차이를 만들지 않습니다."""
     # TODO D28-07-B01: 같은 질문의 Before/After 점수 변화량을 계산하세요. No-answer(None)는 수치 차이를 만들지 않습니다.
     # 힌트: A/B 비교 전 두 실행의 Dataset 버전과 모드가 같아야 합니다.
-    raise NotImplementedError("D28-07-B01 TODO를 완성하세요")
+    if before is None or after is None:
+        return None
+        
+    return after - before
+    
 
 def find_problem_stage(run: dict, gold: list[str]) -> str:
     """검색 후보 누락·Reranking 누락·Context 누락·생성 실패 중 어디인지 반환하세요."""
     # TODO D28-07-B02: 검색 후보 누락·Reranking 누락·Context 누락·생성 실패 중 어디인지 반환하세요.
     # 힌트: Candidate에 Gold가 없다면 먼저 Retrieval 단계 문제입니다.
-    raise NotImplementedError("D28-07-B02 TODO를 완성하세요")
+    # raise NotImplementedError("D28-07-B02 TODO를 완성하세요")
+    if not gold:
+        return "no_answer_case"
+    if not set(run["candidate_ids"]) & set(gold):
+        return "candidate_miss"
+    if not set(run["ranked_ids"][:2]) & set(gold):
+        return "ranking_miss"
+    if not set(run["included_ids"]) & set(gold):
+        return "context_miss"
 
 
 def main():
