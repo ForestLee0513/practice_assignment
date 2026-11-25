@@ -18,43 +18,60 @@ def classify_case(case: dict) -> str:
     """case의 system_error·candidate_has_gold·context_has_gold·answer_grounded를 차례로 확인하고 stage 문자열을 반환하세요. 시스템 장애와 검색 실패를 구분하세요."""
     # TODO D28-01-B01: case의 system_error·candidate_has_gold·context_has_gold·answer_grounded를 차례로 확인하고 stage 문자열을 반환하세요. 시스템 장애와 검색 실패를 구분하세요.
     # 힌트: 먼저 System → Candidate → Context → Generation 순서로 판단합니다.
-    raise NotImplementedError("D28-01-B01 TODO를 완성하세요")
+    if case.get("system_error"):
+        return "system_failure"
+    if not case.get("candidate_has_gold"):
+        return "candidate_miss"
+    if not case.get("context_has_gold"):
+        return "ranking_or_context_miss"
+    if not case.get("answer_grounded"):
+        return "generation_failure"
+
+    return "passed"
 
 def describe_evidence(case: dict, stage: str) -> str:
     """분류된 stage를 설명할 수 있는 구체적인 한 줄의 근거를 반환하세요. 빈 문자열은 안 됩니다."""
     # TODO D28-01-B02: 분류된 stage를 설명할 수 있는 구체적인 한 줄의 근거를 반환하세요. 빈 문자열은 안 됩니다.
     # 힌트: 후보 누락과 Context 누락을 구별하는 문장으로 작성합니다.
-    raise NotImplementedError("D28-01-B02 TODO를 완성하세요")
+    evidence = {
+        "system_failure": "서비스 실행이 실패해 지표를 계산할 수 없음",
+        "candidate_miss": "Gold 문서 ID가 최초 검색 후보에 존재하지 않음",
+        "ranking_or_context_miss": "Gold는 후보에 있으나 LLM Context에 포함되지 않음",
+        "generation_failure": "근거가 Context에 있는데 답변 주장이 지지되지 않음",
+        "passed": "검색 후보·Context·답변 검토 조건 충족",
+    }
+
+    return evidence[stage]
 
 
 def main():
     parser=argparse.ArgumentParser(description="Day28 RAG Evaluation 실습")
     mode=parser.add_mutually_exclusive_group()
-    mode.add_argument('--offline',action='store_true',help='고정 학습 데이터만 실행(기본값)')
-    mode.add_argument('--live',action='store_true',help='실제 CUDA GPU/DB/LLM 연결. 06~08만 지원하며 API 비용 발생 가능')
+    mode.add_argument("--offline",action="store_true",help="고정 학습 데이터만 실행(기본값)")
+    mode.add_argument("--live",action="store_true",help="실제 CUDA GPU/DB/LLM 연결. 06~08만 지원하며 API 비용 발생 가능")
     args=parser.parse_args()
     hooks={
-        "classify_case":classify_case,
-        "describe_evidence":describe_evidence
+        "classify_case": classify_case,
+        "describe_evidence": describe_evidence
     }
     # 학생 과제 함수가 실제 서비스가 아니라 이 지도에 정의된 실습 단계에서 호출됩니다.
     try:
-        result=execute(1,hooks,live=args.live,level='01_basic')
+        result=execute(1,hooks,live=args.live,level="01_basic")
     except Exception as exc:
         # 실패 기록에는 Key·Password·원본 Prompt를 포함하지 않습니다.
-        failure={'status':'execution_failed','exercise':1,
-                 'stage':getattr(exc,'stage','evaluation'),
-                 'error_type':type(exc).__name__, 'mode':'live' if args.live else 'offline_fixture'}
-        write_json(Path(__file__).resolve().parent/'outputs'/'failure.json',failure)
+        failure={"status": "execution_failed","exercise": 1,
+                 "stage": getattr(exc,"stage","evaluation"),
+                 "error_type": type(exc).__name__, "mode": "live" if args.live else "offline_fixture"}
+        write_json(Path(__file__).resolve().parent/"outputs"/"failure.json",failure)
         raise
-    output=Path(__file__).resolve().parent/'outputs'/'result.json'
+    output=Path(__file__).resolve().parent/"outputs"/"result.json"
     write_json(output,result)
     # 학생이 코드로 만든 설명 보고서는 별도 Markdown 파일로 저장합니다.
-    if isinstance(result.get('markdown_report'),str):
-        (output.parent/'report.md').write_text(result['markdown_report'],encoding='utf-8')
-    print('Day28 실습 1 · 01_basic ·',result['mode'])
-    print('출력:',output)
+    if isinstance(result.get("markdown_report"),str):
+        (output.parent/"report.md").write_text(result["markdown_report"],encoding="utf-8")
+    print("Day28 실습 1 · 01_basic ·",result["mode"])
+    print("출력:",output)
     return result
 
-if __name__=='__main__':
+if __name__=="__main__": 
     main()
