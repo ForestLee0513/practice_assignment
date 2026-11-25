@@ -12,19 +12,30 @@ if str(ROLE_ROOT) not in sys.path:
 
 from coursekit.eval_workshops import execute
 from coursekit.eval_report import write_json
+import copy
 
 
 def safe_target_input(example: dict) -> dict:
     """question_id·question·category·history만 새 dict로 복사하고 Gold·Reference를 제외하세요."""
     # TODO D28-06-B01: question_id·question·category·history만 새 dict로 복사하고 Gold·Reference를 제외하세요.
     # 힌트: Target Runner는 정답을 모르는 상태에서 실행해야 공정합니다.
-    raise NotImplementedError("D28-06-B01 TODO를 완성하세요")
 
+    return {
+        key: example[key] for key in ("question_id", "question", "category", "history")
+    }
+    
 def invoke_target(target, request: dict) -> dict:
     """실제 Runnable.invoke(request)를 호출하고 결과가 dict이며 질문 ID가 같은지 확인하세요."""
     # TODO D28-06-B02: 실제 Runnable.invoke(request)를 호출하고 결과가 dict이며 질문 ID가 같은지 확인하세요.
     # 힌트: 단순 함수 직접 호출 대신 RunnableLambda를 감싼 객체의 invoke()입니다.
-    raise NotImplementedError("D28-06-B02 TODO를 완성하세요")
+    from coursekit.eval_dataset import assert_no_gold_leakage
+    assert_no_gold_leakage(request)
+
+    result=target.invoke(request)
+    if not isinstance(result,dict) or result.get('question_id')!=request['question_id']:
+        raise ValueError('Target 출력의 질문 ID 불일치')
+    
+    return result
 
 
 def main():
