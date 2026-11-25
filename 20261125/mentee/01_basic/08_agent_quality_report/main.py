@@ -18,13 +18,15 @@ def evaluate_one(example: dict, run: dict, gold: list[str], grades: dict) -> dic
     """질문 ID로 Target 출력과 Gold를 결합해 평가 레코드를 반환하세요."""
     # TODO D28-08-B01: 질문 ID로 Target 출력과 Gold를 결합해 평가 레코드를 반환하세요.
     # 힌트: Trace 필드가 빠졌다면 빈 리스트로 바꾸지 말고 오류로 보고합니다.
-    raise NotImplementedError("D28-08-B01 TODO를 완성하세요")
+    from coursekit.eval_report import evaluate_record
+    return evaluate_record(example=example, run=run, gold=gold, grades=grades, k=3)
 
 def summarize_all(rows: list[dict]) -> dict:
     """개별 질문 결과의 평균(유효 Gold만)과 오류·출처 상태를 집계하세요."""
     # TODO D28-08-B02: 개별 질문 결과의 평균(유효 Gold만)과 오류·출처 상태를 집계하세요.
     # 힌트: No-answer 질문은 Retrieval 평균에서 제외하고 별도 개수로 기록합니다.
-    raise NotImplementedError("D28-08-B02 TODO를 완성하세요")
+    from coursekit.eval_report import report_summary
+    return report_summary(rows=rows)
 
 
 def main():
