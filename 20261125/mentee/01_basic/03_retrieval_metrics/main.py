@@ -18,13 +18,26 @@ def calculate_recall(ranked: list[str], gold: list[str], k: int) -> float | None
     """Top-k에서 찾은 Gold 개수 / 전체 Gold 개수를 계산하세요. Gold가 빈 질문은 None을 반환하세요."""
     # TODO D28-03-B01: Top-k에서 찾은 Gold 개수 / 전체 Gold 개수를 계산하세요. Gold가 빈 질문은 None을 반환하세요.
     # 힌트: 예: Gold 2개 중 Top-3에 1개면 Recall@3=0.5입니다.
-    raise NotImplementedError("D28-03-B01 TODO를 완성하세요")
+    if type(k) is not int or k<1:
+        raise ValueError('k는 1 이상의 정수')
+    
+    filtered_ranked = set(ranked[:k])
+    found_gold = list(filtered_ranked & set(gold))
+
+    if len(gold) == 0:
+        return None
+
+    return len(found_gold) / len(set(gold))
 
 def count_gold_hits(ranked: list[str], gold: list[str], k: int) -> int:
     """Top-k 목록과 Gold의 교집합 크기를 반환하세요. 중복 ID는 한 번만 셉니다."""
     # TODO D28-03-B02: Top-k 목록과 Gold의 교집합 크기를 반환하세요. 중복 ID는 한 번만 셉니다.
     # 힌트: set 교집합(&)을 사용할 수 있습니다.
-    raise NotImplementedError("D28-03-B02 TODO를 완성하세요")
+    # raise NotImplementedError("D28-03-B02 TODO를 완성하세요")
+    filtered_ranked = set(ranked[:k])
+    found_gold = list(filtered_ranked & set(gold))
+
+    return found_gold
 
 
 def main():
