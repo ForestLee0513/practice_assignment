@@ -7,11 +7,13 @@ def make_request(tool_name: str, args: dict, call_id: str) -> dict:
     """AIMessage.tool_calls의 항목 형태. 실제로 도구를 실행하지는 않습니다."""
     # TODO D29-02-B-01: AIMessage.tool_calls의 항목 형태. 실제로 도구를 실행하지는 않습니다.
     # 힌트: name, args, id가 요청값이고 tool_call_id가 결과의 연결 키입니다.
-    raise NotImplementedError('D29-02-B-01: 직접 구현하세요')
+    from coursekit.contracts import tool_call_request
+    return tool_call_request(tool_name,args,call_id)
 
 def match_result(call: dict, result: dict) -> dict:
     """실제로 DB Tool을 호출한 뒤 결과를 같은 tool_call_id에 묶습니다."""
     # TODO D29-02-B-02: 실제로 DB Tool을 호출한 뒤 결과를 같은 tool_call_id에 묶습니다.
     # 힌트: name, args, id가 요청값이고 tool_call_id가 결과의 연결 키입니다.
-    raise NotImplementedError('D29-02-B-02: 직접 구현하세요')
+    from coursekit.contracts import tool_result_message
+    return tool_result_message(call,result)
 
